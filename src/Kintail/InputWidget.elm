@@ -2,11 +2,11 @@ module Kintail.InputWidget
     exposing
         ( InputWidget
         , Msg
-        , value
-        , view
-        , update
-        , custom
+        , map
+        , map2
         , checkbox
+        , custom
+        , app
         )
 
 import Json.Encode as Encode exposing (Value)
@@ -14,33 +14,122 @@ import Json.Decode as Decode exposing (Decoder)
 import Html exposing (Html)
 import Html.Attributes as Html
 import Html.Events as Html
-
-
-type Msg
-    = Msg Value
+import Html.App as Html
 
 
 type InputWidget a
     = InputWidget
         { value : a
         , html : Html Msg
-        , update : Msg -> InputWidget a
+        , update : Msg -> InputWidget a -> InputWidget a
         }
 
 
-value : InputWidget a -> a
-value (InputWidget inputWidget) =
-    inputWidget.value
+type alias Msg =
+    Value
 
 
-view : InputWidget a -> Html Msg
-view (InputWidget inputWidget) =
-    inputWidget.html
+map : (a -> Html Msg -> ( b, Html Msg )) -> InputWidget a -> InputWidget b
+map function inputWidget =
+    let
+        (InputWidget impl) =
+            inputWidget
+
+        update message self =
+            map function (impl.update message inputWidget)
+
+        ( value, html ) =
+            function impl.value impl.html
+    in
+        InputWidget
+            { value = value
+            , html = html
+            , update = update
+            }
 
 
-update : Msg -> InputWidget a -> InputWidget a
-update message (InputWidget inputWidget) =
-    inputWidget.update message
+tag : Int -> Html Msg -> Html Msg
+tag index =
+    Html.map (\message -> Encode.list [ Encode.int index, message ])
+
+
+decodeTagged =
+    Decode.decodeValue (Decode.tuple2 (,) Decode.int Decode.value)
+
+
+map2 :
+    (( a, b ) -> ( Html Msg, Html Msg ) -> ( c, Html Msg ))
+    -> InputWidget a
+    -> InputWidget b
+    -> InputWidget c
+map2 function inputWidgetA inputWidgetB =
+    let
+        (InputWidget implA) =
+            inputWidgetA
+
+        (InputWidget implB) =
+            inputWidgetB
+
+        ( value, html ) =
+            function ( implA.value, implB.value )
+                ( tag 0 implA.html, tag 1 implB.html )
+
+        update message self =
+            case decodeTagged message of
+                Ok ( 0, messageA ) ->
+                    let
+                        updatedWidgetA =
+                            implA.update messageA inputWidgetA
+                    in
+                        map2 function updatedWidgetA inputWidgetB
+
+                Ok ( 1, messageB ) ->
+                    let
+                        updatedWidgetB =
+                            implB.update messageB inputWidgetB
+                    in
+                        map2 function inputWidgetA updatedWidgetB
+
+                _ ->
+                    self
+    in
+        InputWidget
+            { value = value
+            , html = html
+            , update = update
+            }
+
+
+checkboxType =
+    Html.type' "checkbox"
+
+
+onCheck =
+    Html.onCheck Encode.bool
+
+
+checkbox : List (Html.Attribute Msg) -> Bool -> InputWidget Bool
+checkbox givenAttributes value =
+    let
+        attributes =
+            checkboxType :: Html.checked value :: onCheck :: givenAttributes
+
+        html =
+            Html.input attributes []
+
+        update message self =
+            case Decode.decodeValue Decode.bool message of
+                Ok newValue ->
+                    checkbox givenAttributes newValue
+
+                Err description ->
+                    self
+    in
+        InputWidget
+            { value = value
+            , html = html
+            , update = update
+            }
 
 
 custom :
@@ -54,7 +143,13 @@ custom :
     -> InputWidget a
 custom spec =
     let
-        update message =
+        value =
+            spec.value spec.model
+
+        html =
+            Html.map spec.encodeMsg (spec.view spec.model)
+
+        update message self =
             case Decode.decodeValue spec.decodeMsg message of
                 Ok decodedMessage ->
                     let
@@ -64,45 +159,26 @@ custom spec =
                         custom { spec | model = newModel }
 
                 Err _ ->
-                    currentWidget
-
-        currentWidget =
-            InputWidget
-                { value = spec.value model
-                , html = Html.map (spec.encodeMsg >> Msg) (spec.view model)
-                , update = update
-                }
+                    self
     in
-        currentWidget
+        InputWidget
+            { value = value
+            , html = html
+            , update = update
+            }
 
 
-checkboxType =
-    Html.type' "checkbox"
-
-
-onCheck =
-    Html.onCheck (Encode.bool >> Msg)
-
-
-checkbox : List (Html.Attribute Msg) -> Bool -> InputWidget Bool
-checkbox givenAttributes value =
+app : InputWidget a -> Program Never
+app inputWidget =
     let
-        attributes =
-            checkboxType :: Html.checked value :: onCheck :: givenAttributes
+        view (InputWidget impl) =
+            impl.html
 
-        update message =
-            case Decode.decodeValue Decode.bool message of
-                Ok newValue ->
-                    checkbox givenAttributes newValue
-
-                Err description ->
-                    currentWidget
-
-        currentWidget =
-            InputWidget
-                { value = value
-                , html = Html.input attributes []
-                , update = update
-                }
+        update message ((InputWidget impl) as inputWidget) =
+            impl.update message inputWidget
     in
-        currentWidget
+        Html.beginnerProgram
+            { model = inputWidget
+            , view = view
+            , update = update
+            }
