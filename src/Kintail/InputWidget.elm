@@ -3,7 +3,9 @@ module Kintail.InputWidget
         ( InputWidget
         , Msg
         , map
-        , map2
+        , append
+        , prepend
+        , compose2
         , checkbox
         , custom
         , app
@@ -15,6 +17,7 @@ import Html exposing (Html)
 import Html.Attributes as Html
 import Html.Events as Html
 import Html.App as Html
+import Basics.Extra exposing (..)
 
 
 type InputWidget a
@@ -29,7 +32,11 @@ type alias Msg =
     Value
 
 
-map : (a -> Html Msg -> ( b, Html Msg )) -> InputWidget a -> InputWidget b
+type alias Container =
+    List (Html Msg) -> Html Msg
+
+
+map : (a -> b) -> InputWidget a -> InputWidget b
 map function inputWidget =
     let
         (InputWidget impl) =
@@ -37,9 +44,28 @@ map function inputWidget =
 
         update message self =
             map function (impl.update message inputWidget)
+    in
+        InputWidget
+            { value = function impl.value
+            , html = impl.html
+            , update = update
+            }
 
-        ( value, html ) =
-            function impl.value impl.html
+
+append : Container -> (a -> Html Never) -> InputWidget a -> InputWidget a
+append container decoration inputWidget =
+    let
+        (InputWidget impl) =
+            inputWidget
+
+        value =
+            impl.value
+
+        html =
+            container [ impl.html, Html.map never (decoration value) ]
+
+        update message self =
+            append container decoration (impl.update message inputWidget)
     in
         InputWidget
             { value = value
@@ -48,21 +74,44 @@ map function inputWidget =
             }
 
 
-tag : Int -> Html Msg -> Html Msg
-tag index =
-    Html.map (\message -> Encode.list [ Encode.int index, message ])
+prepend : Container -> (a -> Html Never) -> InputWidget a -> InputWidget a
+prepend container decoration inputWidget =
+    let
+        (InputWidget impl) =
+            inputWidget
+
+        value =
+            impl.value
+
+        html =
+            container [ Html.map never (decoration value), impl.html ]
+
+        update message self =
+            prepend container decoration (impl.update message inputWidget)
+    in
+        InputWidget
+            { value = value
+            , html = html
+            , update = update
+            }
+
+
+tag : Int -> Msg -> Msg
+tag index message =
+    Encode.list [ Encode.int index, message ]
 
 
 decodeTagged =
     Decode.decodeValue (Decode.tuple2 (,) Decode.int Decode.value)
 
 
-map2 :
-    (( a, b ) -> ( Html Msg, Html Msg ) -> ( c, Html Msg ))
+compose2 :
+    Container
+    -> (a -> b -> c)
     -> InputWidget a
     -> InputWidget b
     -> InputWidget c
-map2 function inputWidgetA inputWidgetB =
+compose2 container function inputWidgetA inputWidgetB =
     let
         (InputWidget implA) =
             inputWidgetA
@@ -70,9 +119,14 @@ map2 function inputWidgetA inputWidgetB =
         (InputWidget implB) =
             inputWidgetB
 
-        ( value, html ) =
-            function ( implA.value, implB.value )
-                ( tag 0 implA.html, tag 1 implB.html )
+        value =
+            function implA.value implB.value
+
+        html =
+            container
+                [ Html.map (tag 0) implA.html
+                , Html.map (tag 1) implB.html
+                ]
 
         update message self =
             case decodeTagged message of
@@ -81,14 +135,14 @@ map2 function inputWidgetA inputWidgetB =
                         updatedWidgetA =
                             implA.update messageA inputWidgetA
                     in
-                        map2 function updatedWidgetA inputWidgetB
+                        compose2 container function updatedWidgetA inputWidgetB
 
                 Ok ( 1, messageB ) ->
                     let
                         updatedWidgetB =
                             implB.update messageB inputWidgetB
                     in
-                        map2 function inputWidgetA updatedWidgetB
+                        compose2 container function inputWidgetA updatedWidgetB
 
                 _ ->
                     self
