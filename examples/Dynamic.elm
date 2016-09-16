@@ -87,7 +87,7 @@ main : Program Never
 main =
     let
         label sum =
-            Html.div [] [ Html.text (toString sum) ]
+            Html.text (toString sum)
 
         div =
             Html.div []
