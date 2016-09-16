@@ -3,6 +3,7 @@ module Kintail.InputWidget
         ( InputWidget
         , Msg
         , map
+        , wrap
         , append
         , prepend
         , compose2
@@ -25,6 +26,8 @@ type InputWidget a
         { value : a
         , html : Html Msg
         , update : Msg -> InputWidget a -> InputWidget a
+        , request : Cmd Msg
+        , subscriptions : Sub Msg
         }
 
 
@@ -49,6 +52,32 @@ map function inputWidget =
             { value = function impl.value
             , html = impl.html
             , update = update
+            , request = impl.request
+            , subscriptions = impl.subscriptions
+            }
+
+
+wrap : Container -> InputWidget a -> InputWidget a
+wrap container inputWidget =
+    let
+        (InputWidget impl) =
+            inputWidget
+
+        value =
+            impl.value
+
+        html =
+            container [ impl.html ]
+
+        update message self =
+            wrap container (impl.update message inputWidget)
+    in
+        InputWidget
+            { value = value
+            , html = html
+            , update = update
+            , request = impl.request
+            , subscriptions = impl.subscriptions
             }
 
 
@@ -71,6 +100,8 @@ append container decoration inputWidget =
             { value = value
             , html = html
             , update = update
+            , request = impl.request
+            , subscriptions = impl.subscriptions
             }
 
 
@@ -93,6 +124,8 @@ prepend container decoration inputWidget =
             { value = value
             , html = html
             , update = update
+            , request = impl.request
+            , subscriptions = impl.subscriptions
             }
 
 
@@ -146,11 +179,25 @@ compose2 container function inputWidgetA inputWidgetB =
 
                 _ ->
                     self
+
+        request =
+            Cmd.batch
+                [ Cmd.map (tag 0) implA.request
+                , Cmd.map (tag 1) implB.request
+                ]
+
+        subscriptions =
+            Sub.batch
+                [ Sub.map (tag 0) implA.subscriptions
+                , Sub.map (tag 1) implB.subscriptions
+                ]
     in
         InputWidget
             { value = value
             , html = html
             , update = update
+            , request = request
+            , subscriptions = subscriptions
             }
 
 
@@ -183,13 +230,16 @@ checkbox givenAttributes value =
             { value = value
             , html = html
             , update = update
+            , request = Cmd.none
+            , subscriptions = Sub.none
             }
 
 
 custom :
-    { model : model
+    { init : ( model, Cmd msg )
     , view : model -> Html msg
-    , update : msg -> model -> model
+    , update : msg -> model -> ( model, Cmd msg )
+    , subscriptions : model -> Sub msg
     , value : model -> a
     , encodeMsg : msg -> Value
     , decodeMsg : Decoder msg
@@ -197,42 +247,67 @@ custom :
     -> InputWidget a
 custom spec =
     let
+        ( initModel, initRequest ) =
+            spec.init
+
         value =
-            spec.value spec.model
+            spec.value initModel
 
         html =
-            Html.map spec.encodeMsg (spec.view spec.model)
+            Html.map spec.encodeMsg (spec.view initModel)
 
         update message self =
             case Decode.decodeValue spec.decodeMsg message of
                 Ok decodedMessage ->
                     let
-                        newModel =
-                            spec.update decodedMessage spec.model
+                        newState =
+                            spec.update decodedMessage initModel
                     in
-                        custom { spec | model = newModel }
+                        custom { spec | init = newState }
 
                 Err _ ->
                     self
+
+        request =
+            Cmd.map spec.encodeMsg initRequest
+
+        subscriptions =
+            Sub.map spec.encodeMsg (spec.subscriptions initModel)
     in
         InputWidget
             { value = value
             , html = html
             , update = update
+            , request = request
+            , subscriptions = subscriptions
             }
 
 
 app : InputWidget a -> Program Never
 app inputWidget =
     let
+        (InputWidget impl) =
+            inputWidget
+
+        init =
+            ( inputWidget, impl.request )
+
         view (InputWidget impl) =
             impl.html
 
         update message ((InputWidget impl) as inputWidget) =
-            impl.update message inputWidget
+            let
+                ((InputWidget newImpl) as newInputWidget) =
+                    impl.update message inputWidget
+            in
+                ( newInputWidget, newImpl.request )
+
+        subscriptions (InputWidget impl) =
+            impl.subscriptions
     in
-        Html.beginnerProgram
-            { model = inputWidget
+        Html.program
+            { init = ( inputWidget, impl.request )
             , view = view
             , update = update
+            , subscriptions = subscriptions
             }
