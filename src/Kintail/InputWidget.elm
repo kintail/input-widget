@@ -285,13 +285,13 @@ custom spec =
 
 
 app : InputWidget a -> Program Never
-app inputWidget =
+app initialInputWidget =
     let
-        (InputWidget impl) =
-            inputWidget
+        (InputWidget initialImpl) =
+            initialInputWidget
 
         init =
-            ( inputWidget, impl.request )
+            ( initialInputWidget, initialImpl.request )
 
         view (InputWidget impl) =
             impl.html
@@ -307,7 +307,7 @@ app inputWidget =
             impl.subscriptions
     in
         Html.program
-            { init = ( inputWidget, impl.request )
+            { init = init
             , view = view
             , update = update
             , subscriptions = subscriptions
