@@ -3,6 +3,11 @@ module Kintail.InputWidget
         ( InputWidget
         , Msg
         , Container
+        , init
+        , value
+        , view
+        , update
+        , subscriptions
         , map
         , wrap
         , append
@@ -38,6 +43,35 @@ type alias Msg =
 
 type alias Container =
     List (Html Msg) -> Html Msg
+
+
+init : (Msg -> msg) -> InputWidget a -> ( InputWidget a, Cmd msg )
+init tag ((InputWidget impl) as inputWidget) =
+    ( current inputWidget, Cmd.map tag impl.request )
+
+
+value : InputWidget a -> a
+value (InputWidget impl) =
+    impl.value
+
+
+view : (Msg -> msg) -> InputWidget a -> Html msg
+view tag (InputWidget impl) =
+    Html.map tag impl.html
+
+
+update : (Msg -> msg) -> Msg -> InputWidget a -> ( InputWidget a, Cmd msg )
+update tag message ((InputWidget impl) as inputWidget) =
+    let
+        newInputWidget =
+            impl.update message inputWidget
+    in
+        init tag newInputWidget
+
+
+subscriptions : (Msg -> msg) -> InputWidget a -> Sub msg
+subscriptions tag (InputWidget impl) =
+    Sub.map tag impl.subscriptions
 
 
 current : InputWidget a -> InputWidget a
