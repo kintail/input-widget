@@ -1,4 +1,4 @@
-module Combine2 exposing (..)
+module Map2 exposing (..)
 
 import Html exposing (Html)
 import Kintail.InputWidget as InputWidget exposing (InputWidget)
