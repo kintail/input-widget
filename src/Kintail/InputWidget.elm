@@ -14,6 +14,7 @@ module Kintail.InputWidget
         , prepend
         , compose2
         , checkbox
+        , lineEdit
         , custom
         , app
         )
@@ -268,6 +269,36 @@ checkbox givenAttributes value =
             case Decode.decodeValue Decode.bool message of
                 Ok newValue ->
                     checkbox givenAttributes newValue
+
+                Err description ->
+                    current self
+    in
+        InputWidget
+            { value = value
+            , html = html
+            , update = update
+            , request = Cmd.none
+            , subscriptions = Sub.none
+            }
+
+
+onInput =
+    Html.onInput Encode.string
+
+
+lineEdit : List (Html.Attribute Msg) -> String -> InputWidget String
+lineEdit givenAttributes value =
+    let
+        attributes =
+            Html.value value :: onInput :: givenAttributes
+
+        html =
+            Html.input attributes []
+
+        update message self =
+            case Decode.decodeValue Decode.string message of
+                Ok newValue ->
+                    lineEdit givenAttributes newValue
 
                 Err description ->
                     current self
