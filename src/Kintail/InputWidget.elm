@@ -2,6 +2,7 @@ module Kintail.InputWidget
     exposing
         ( InputWidget
         , Msg
+        , Container
         , map
         , wrap
         , append
