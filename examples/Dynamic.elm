@@ -86,17 +86,20 @@ counter initialCount startRunning =
 main : Program Never
 main =
     let
-        label sum =
-            Html.text (toString sum)
-
         div =
             Html.div []
 
+        firstCounter =
+            InputWidget.wrap div (counter 10 False)
+
+        secondCounter =
+            InputWidget.wrap div (counter 0 True)
+
+        label sum =
+            Html.text (toString sum)
+
         widget =
-            InputWidget.compose2 (+)
-                div
-                (InputWidget.wrap div (counter 10 False))
-                (InputWidget.wrap div (counter 0 True))
+            InputWidget.map2 (+) div firstCounter secondCounter
                 |> InputWidget.append label div
     in
         InputWidget.app widget

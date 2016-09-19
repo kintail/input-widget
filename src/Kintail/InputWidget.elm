@@ -8,11 +8,11 @@ module Kintail.InputWidget
         , view
         , update
         , subscriptions
-        , map
         , wrap
         , append
         , prepend
-        , compose2
+        , map
+        , map2
         , checkbox
         , lineEdit
         , custom
@@ -78,24 +78,6 @@ subscriptions tag (InputWidget impl) =
 current : InputWidget a -> InputWidget a
 current (InputWidget impl) =
     InputWidget { impl | request = Cmd.none }
-
-
-map : (a -> b) -> InputWidget a -> InputWidget b
-map function inputWidget =
-    let
-        (InputWidget impl) =
-            inputWidget
-
-        update message self =
-            map function (impl.update message inputWidget)
-    in
-        InputWidget
-            { value = function impl.value
-            , html = impl.html
-            , update = update
-            , request = impl.request
-            , subscriptions = impl.subscriptions
-            }
 
 
 wrap : Container -> InputWidget a -> InputWidget a
@@ -170,6 +152,24 @@ prepend decoration container inputWidget =
             }
 
 
+map : (a -> b) -> InputWidget a -> InputWidget b
+map function inputWidget =
+    let
+        (InputWidget impl) =
+            inputWidget
+
+        update message self =
+            map function (impl.update message inputWidget)
+    in
+        InputWidget
+            { value = function impl.value
+            , html = impl.html
+            , update = update
+            , request = impl.request
+            , subscriptions = impl.subscriptions
+            }
+
+
 tag : Int -> Msg -> Msg
 tag index message =
     Encode.list [ Encode.int index, message ]
@@ -179,13 +179,13 @@ decodeTagged =
     Decode.decodeValue (Decode.tuple2 (,) Decode.int Decode.value)
 
 
-compose2 :
+map2 :
     (a -> b -> c)
     -> Container
     -> InputWidget a
     -> InputWidget b
     -> InputWidget c
-compose2 function container inputWidgetA inputWidgetB =
+map2 function container inputWidgetA inputWidgetB =
     let
         (InputWidget implA) =
             inputWidgetA
@@ -209,7 +209,7 @@ compose2 function container inputWidgetA inputWidgetB =
                         updatedWidgetA =
                             implA.update messageA inputWidgetA
                     in
-                        compose2 function
+                        map2 function
                             container
                             updatedWidgetA
                             (current inputWidgetB)
@@ -219,7 +219,7 @@ compose2 function container inputWidgetA inputWidgetB =
                         updatedWidgetB =
                             implB.update messageB inputWidgetB
                     in
-                        compose2 function
+                        map2 function
                             container
                             (current inputWidgetA)
                             updatedWidgetB

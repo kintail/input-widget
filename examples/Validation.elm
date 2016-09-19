@@ -52,10 +52,7 @@ personWidget =
             in
                 Html.div [] [ Html.text resultString ]
     in
-        InputWidget.compose2 toPerson
-            div
-            firstNameWidget
-            lastNameWidget
+        InputWidget.map2 toPerson div firstNameWidget lastNameWidget
             |> InputWidget.append resultHtml div
 
 

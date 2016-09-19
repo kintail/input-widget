@@ -30,11 +30,14 @@ main =
         label text =
             div [ Html.text text ]
 
+        firstCheckbox =
+            InputWidget.checkbox [] False
+
+        secondCheckbox =
+            InputWidget.checkbox [] True
+
         widget =
-            InputWidget.compose2 description
-                span
-                (InputWidget.checkbox [] False)
-                (InputWidget.checkbox [] True)
+            InputWidget.map2 description span firstCheckbox secondCheckbox
                 |> InputWidget.prepend label div
     in
         InputWidget.app widget
