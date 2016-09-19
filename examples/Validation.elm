@@ -14,13 +14,16 @@ type alias Person =
 personWidget : InputWidget (Result String Person)
 personWidget =
     let
+        div =
+            Html.div []
+
         firstNameWidget =
             InputWidget.lineEdit [ Html.placeholder "First name" ] ""
-                |> InputWidget.wrap (Html.div [])
+                |> InputWidget.wrap div
 
         lastNameWidget =
             InputWidget.lineEdit [ Html.placeholder "Last name" ] ""
-                |> InputWidget.wrap (Html.div [])
+                |> InputWidget.wrap div
 
         toPerson : String -> String -> Result String Person
         toPerson first last =
@@ -49,11 +52,11 @@ personWidget =
             in
                 Html.div [] [ Html.text resultString ]
     in
-        InputWidget.compose2 (Html.div [])
-            toPerson
+        InputWidget.compose2 toPerson
+            div
             firstNameWidget
             lastNameWidget
-            |> InputWidget.append (Html.div []) resultHtml
+            |> InputWidget.append resultHtml div
 
 
 main : Program Never

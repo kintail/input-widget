@@ -122,8 +122,8 @@ wrap container inputWidget =
             }
 
 
-append : Container -> (a -> Html Never) -> InputWidget a -> InputWidget a
-append container decoration inputWidget =
+append : (a -> Html Never) -> Container -> InputWidget a -> InputWidget a
+append decoration container inputWidget =
     let
         (InputWidget impl) =
             inputWidget
@@ -135,7 +135,7 @@ append container decoration inputWidget =
             container [ impl.html, Html.map never (decoration value) ]
 
         update message self =
-            append container decoration (impl.update message inputWidget)
+            append decoration container (impl.update message inputWidget)
     in
         InputWidget
             { value = value
@@ -146,8 +146,8 @@ append container decoration inputWidget =
             }
 
 
-prepend : Container -> (a -> Html Never) -> InputWidget a -> InputWidget a
-prepend container decoration inputWidget =
+prepend : (a -> Html Never) -> Container -> InputWidget a -> InputWidget a
+prepend decoration container inputWidget =
     let
         (InputWidget impl) =
             inputWidget
@@ -159,7 +159,7 @@ prepend container decoration inputWidget =
             container [ Html.map never (decoration value), impl.html ]
 
         update message self =
-            prepend container decoration (impl.update message inputWidget)
+            prepend decoration container (impl.update message inputWidget)
     in
         InputWidget
             { value = value
@@ -180,12 +180,12 @@ decodeTagged =
 
 
 compose2 :
-    Container
-    -> (a -> b -> c)
+    (a -> b -> c)
+    -> Container
     -> InputWidget a
     -> InputWidget b
     -> InputWidget c
-compose2 container function inputWidgetA inputWidgetB =
+compose2 function container inputWidgetA inputWidgetB =
     let
         (InputWidget implA) =
             inputWidgetA
@@ -209,8 +209,8 @@ compose2 container function inputWidgetA inputWidgetB =
                         updatedWidgetA =
                             implA.update messageA inputWidgetA
                     in
-                        compose2 container
-                            function
+                        compose2 function
+                            container
                             updatedWidgetA
                             (current inputWidgetB)
 
@@ -219,8 +219,8 @@ compose2 container function inputWidgetA inputWidgetB =
                         updatedWidgetB =
                             implB.update messageB inputWidgetB
                     in
-                        compose2 container
-                            function
+                        compose2 function
+                            container
                             (current inputWidgetA)
                             updatedWidgetB
 

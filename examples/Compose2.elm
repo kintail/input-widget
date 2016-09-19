@@ -7,6 +7,12 @@ import Kintail.InputWidget as InputWidget exposing (InputWidget)
 main : Program Never
 main =
     let
+        div =
+            Html.div []
+
+        span =
+            Html.span []
+
         description firstValue secondValue =
             case ( firstValue, secondValue ) of
                 ( True, True ) ->
@@ -22,13 +28,13 @@ main =
                     "Neither"
 
         label text =
-            Html.div [] [ Html.text text ]
+            div [ Html.text text ]
 
         widget =
-            InputWidget.compose2 (Html.span [])
-                description
+            InputWidget.compose2 description
+                span
                 (InputWidget.checkbox [] False)
                 (InputWidget.checkbox [] True)
-                |> InputWidget.prepend (Html.div []) label
+                |> InputWidget.prepend label div
     in
         InputWidget.app widget

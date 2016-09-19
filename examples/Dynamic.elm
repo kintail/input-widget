@@ -93,10 +93,10 @@ main =
             Html.div []
 
         widget =
-            InputWidget.compose2 div
-                (\firstValue secondValue -> firstValue + secondValue)
+            InputWidget.compose2 (+)
+                div
                 (InputWidget.wrap div (counter 10 False))
                 (InputWidget.wrap div (counter 0 True))
-                |> InputWidget.append div label
+                |> InputWidget.append label div
     in
         InputWidget.app widget
