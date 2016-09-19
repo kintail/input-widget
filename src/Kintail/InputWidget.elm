@@ -40,6 +40,11 @@ type alias Container =
     List (Html Msg) -> Html Msg
 
 
+current : InputWidget a -> InputWidget a
+current (InputWidget impl) =
+    InputWidget { impl | request = Cmd.none }
+
+
 map : (a -> b) -> InputWidget a -> InputWidget b
 map function inputWidget =
     let
@@ -169,17 +174,23 @@ compose2 container function inputWidgetA inputWidgetB =
                         updatedWidgetA =
                             implA.update messageA inputWidgetA
                     in
-                        compose2 container function updatedWidgetA inputWidgetB
+                        compose2 container
+                            function
+                            updatedWidgetA
+                            (current inputWidgetB)
 
                 Ok ( 1, messageB ) ->
                     let
                         updatedWidgetB =
                             implB.update messageB inputWidgetB
                     in
-                        compose2 container function inputWidgetA updatedWidgetB
+                        compose2 container
+                            function
+                            (current inputWidgetA)
+                            updatedWidgetB
 
                 _ ->
-                    self
+                    current self
 
         request =
             Cmd.batch
@@ -225,7 +236,7 @@ checkbox givenAttributes value =
                     checkbox givenAttributes newValue
 
                 Err description ->
-                    self
+                    current self
     in
         InputWidget
             { value = value
@@ -267,7 +278,7 @@ custom spec =
                         custom { spec | init = newState }
 
                 Err _ ->
-                    self
+                    current self
 
         request =
             Cmd.map spec.encodeMsg initRequest
