@@ -1,4 +1,4 @@
-module Dynamic exposing (..)
+module Custom exposing (..)
 
 import Html exposing (Html)
 import Html.Attributes as Html
