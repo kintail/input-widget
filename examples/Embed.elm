@@ -10,7 +10,7 @@ type Msg
 
 
 type alias Model =
-    { checkbox : InputWidget Bool
+    { checkboxState : InputWidget.State Bool
     , timesChanged : Int
     }
 
@@ -18,10 +18,10 @@ type alias Model =
 init : ( Model, Cmd Msg )
 init =
     let
-        ( checkbox, checkboxCmd ) =
+        ( checkboxState, checkboxCmd ) =
             InputWidget.init CheckboxMsg (InputWidget.checkbox [] False)
     in
-        ( { checkbox = checkbox, timesChanged = 0 }, checkboxCmd )
+        ( { checkboxState = checkboxState, timesChanged = 0 }, checkboxCmd )
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -29,11 +29,14 @@ update message currentModel =
     case message of
         CheckboxMsg msg ->
             let
-                ( updatedCheckbox, checkboxCmd ) =
-                    InputWidget.update CheckboxMsg msg currentModel.checkbox
+                currentCheckboxState =
+                    currentModel.checkboxState
+
+                ( updatedCheckboxState, checkboxCmd ) =
+                    InputWidget.update CheckboxMsg msg currentCheckboxState
 
                 updatedModel =
-                    { checkbox = updatedCheckbox
+                    { checkboxState = updatedCheckboxState
                     , timesChanged = currentModel.timesChanged + 1
                     }
             in
@@ -44,20 +47,20 @@ view : Model -> Html Msg
 view model =
     let
         label =
-            toString (InputWidget.value model.checkbox)
+            toString (InputWidget.value model.checkboxState)
                 ++ ", changed "
                 ++ toString model.timesChanged
                 ++ " times"
     in
         Html.div []
-            [ Html.div [] [ InputWidget.view CheckboxMsg model.checkbox ]
+            [ Html.div [] [ InputWidget.view CheckboxMsg model.checkboxState ]
             , Html.div [] [ Html.text label ]
             ]
 
 
 subscriptions : Model -> Sub Msg
 subscriptions model =
-    InputWidget.subscriptions CheckboxMsg model.checkbox
+    InputWidget.subscriptions CheckboxMsg model.checkboxState
 
 
 main : Program Never

@@ -1,6 +1,7 @@
 module Kintail.InputWidget
     exposing
         ( InputWidget
+        , State
         , Msg
         , Container
         , init
@@ -38,6 +39,10 @@ type InputWidget a
         }
 
 
+type State a
+    = State (InputWidget a)
+
+
 type alias Msg =
     Value
 
@@ -46,32 +51,38 @@ type alias Container =
     List (Html Msg) -> Html Msg
 
 
-init : (Msg -> msg) -> InputWidget a -> ( InputWidget a, Cmd msg )
+init : (Msg -> msg) -> InputWidget a -> ( State a, Cmd msg )
 init tag ((InputWidget impl) as inputWidget) =
-    ( current inputWidget, Cmd.map tag impl.request )
+    ( State (current inputWidget), Cmd.map tag impl.request )
 
 
-value : InputWidget a -> a
-value (InputWidget impl) =
+value : State a -> a
+value (State (InputWidget impl)) =
     impl.value
 
 
-view : (Msg -> msg) -> InputWidget a -> Html msg
-view tag (InputWidget impl) =
+view : (Msg -> msg) -> State a -> Html msg
+view tag (State (InputWidget impl)) =
     Html.map tag impl.html
 
 
-update : (Msg -> msg) -> Msg -> InputWidget a -> ( InputWidget a, Cmd msg )
-update tag message ((InputWidget impl) as inputWidget) =
+update : (Msg -> msg) -> Msg -> State a -> ( State a, Cmd msg )
+update tag message state =
     let
+        (State inputWidget) =
+            state
+
+        (InputWidget impl) =
+            inputWidget
+
         newInputWidget =
             impl.update message inputWidget
     in
         init tag newInputWidget
 
 
-subscriptions : (Msg -> msg) -> InputWidget a -> Sub msg
-subscriptions tag (InputWidget impl) =
+subscriptions : (Msg -> msg) -> State a -> Sub msg
+subscriptions tag (State (InputWidget impl)) =
     Sub.map tag impl.subscriptions
 
 
