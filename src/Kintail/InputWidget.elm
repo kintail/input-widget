@@ -39,8 +39,8 @@ type InputWidget a
         }
 
 
-type State a
-    = State (InputWidget a)
+type State msg a
+    = State (Msg -> msg) (InputWidget a)
 
 
 type alias Msg =
@@ -51,25 +51,25 @@ type alias Container =
     List (Html Msg) -> Html Msg
 
 
-init : (Msg -> msg) -> InputWidget a -> ( State a, Cmd msg )
+init : (Msg -> msg) -> InputWidget a -> ( State msg a, Cmd msg )
 init tag ((InputWidget impl) as inputWidget) =
-    ( State (current inputWidget), Cmd.map tag impl.request )
+    ( State tag (current inputWidget), Cmd.map tag impl.request )
 
 
-value : State a -> a
-value (State (InputWidget impl)) =
+value : State msg a -> a
+value (State tag (InputWidget impl)) =
     impl.value
 
 
-view : (Msg -> msg) -> State a -> Html msg
-view tag (State (InputWidget impl)) =
+view : State msg a -> Html msg
+view (State tag (InputWidget impl)) =
     Html.map tag impl.html
 
 
-update : (Msg -> msg) -> Msg -> State a -> ( State a, Cmd msg )
-update tag message state =
+update : Msg -> State msg a -> ( State msg a, Cmd msg )
+update message state =
     let
-        (State inputWidget) =
+        (State tag inputWidget) =
             state
 
         (InputWidget impl) =
@@ -81,8 +81,8 @@ update tag message state =
         init tag newInputWidget
 
 
-subscriptions : (Msg -> msg) -> State a -> Sub msg
-subscriptions tag (State (InputWidget impl)) =
+subscriptions : State msg a -> Sub msg
+subscriptions (State tag (InputWidget impl)) =
     Sub.map tag impl.subscriptions
 
 
@@ -375,7 +375,7 @@ app : InputWidget a -> Program Never
 app inputWidget =
     Html.program
         { init = init identity inputWidget
-        , view = view identity
-        , update = update identity
-        , subscriptions = subscriptions identity
+        , view = view
+        , update = update
+        , subscriptions = subscriptions
         }

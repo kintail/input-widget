@@ -10,7 +10,7 @@ type Msg
 
 
 type alias Model =
-    { checkboxState : InputWidget.State Bool
+    { checkboxState : InputWidget.State Msg Bool
     , timesChanged : Int
     }
 
@@ -33,7 +33,7 @@ update message currentModel =
                     currentModel.checkboxState
 
                 ( updatedCheckboxState, checkboxCmd ) =
-                    InputWidget.update CheckboxMsg msg currentCheckboxState
+                    InputWidget.update msg currentCheckboxState
 
                 updatedModel =
                     { checkboxState = updatedCheckboxState
@@ -53,14 +53,14 @@ view model =
                 ++ " times"
     in
         Html.div []
-            [ Html.div [] [ InputWidget.view CheckboxMsg model.checkboxState ]
+            [ Html.div [] [ InputWidget.view model.checkboxState ]
             , Html.div [] [ Html.text label ]
             ]
 
 
 subscriptions : Model -> Sub Msg
 subscriptions model =
-    InputWidget.subscriptions CheckboxMsg model.checkboxState
+    InputWidget.subscriptions model.checkboxState
 
 
 main : Program Never
