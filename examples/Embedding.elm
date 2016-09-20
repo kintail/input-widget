@@ -1,4 +1,4 @@
-module Embed exposing (..)
+module Embedding exposing (..)
 
 import Html exposing (Html)
 import Html.App as Html
