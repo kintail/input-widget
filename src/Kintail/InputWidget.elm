@@ -9,6 +9,8 @@ module Kintail.InputWidget
         , view
         , update
         , subscriptions
+        , encodeMsg
+        , decodeMsg
         , wrap
         , append
         , prepend
@@ -43,8 +45,8 @@ type State msg a
     = State (Msg -> msg) (InputWidget a)
 
 
-type alias Msg =
-    Value
+type Msg
+    = Msg Value
 
 
 type alias Container =
@@ -84,6 +86,16 @@ update message state =
 subscriptions : State msg a -> Sub msg
 subscriptions (State tag (InputWidget impl)) =
     Sub.map tag impl.subscriptions
+
+
+encodeMsg : Msg -> Value
+encodeMsg (Msg json) =
+    json
+
+
+decodeMsg : Decoder Msg
+decodeMsg =
+    Decode.customDecoder Decode.value (\json -> Ok (Msg json))
 
 
 current : InputWidget a -> InputWidget a
@@ -182,8 +194,8 @@ map function inputWidget =
 
 
 tag : Int -> Msg -> Msg
-tag index message =
-    Encode.list [ Encode.int index, message ]
+tag index (Msg json) =
+    Msg (Encode.list [ Encode.int index, json ])
 
 
 decodeTagged =
@@ -213,22 +225,22 @@ map2 function container inputWidgetA inputWidgetB =
                 , Html.map (tag 1) implB.html
                 ]
 
-        update message self =
-            case decodeTagged message of
-                Ok ( 0, messageA ) ->
+        update (Msg json) self =
+            case decodeTagged json of
+                Ok ( 0, jsonA ) ->
                     let
                         updatedWidgetA =
-                            implA.update messageA inputWidgetA
+                            implA.update (Msg jsonA) inputWidgetA
                     in
                         map2 function
                             container
                             updatedWidgetA
                             (current inputWidgetB)
 
-                Ok ( 1, messageB ) ->
+                Ok ( 1, jsonB ) ->
                     let
                         updatedWidgetB =
-                            implB.update messageB inputWidgetB
+                            implB.update (Msg jsonB) inputWidgetB
                     in
                         map2 function
                             container
@@ -264,7 +276,7 @@ checkboxType =
 
 
 onCheck =
-    Html.onCheck Encode.bool
+    Html.onCheck (Encode.bool >> Msg)
 
 
 checkbox : List (Html.Attribute Msg) -> Bool -> InputWidget Bool
@@ -276,8 +288,8 @@ checkbox givenAttributes value =
         html =
             Html.input attributes []
 
-        update message self =
-            case Decode.decodeValue Decode.bool message of
+        update (Msg json) self =
+            case Decode.decodeValue Decode.bool json of
                 Ok newValue ->
                     checkbox givenAttributes newValue
 
@@ -294,7 +306,7 @@ checkbox givenAttributes value =
 
 
 onInput =
-    Html.onInput Encode.string
+    Html.onInput (Encode.string >> Msg)
 
 
 lineEdit : List (Html.Attribute Msg) -> String -> InputWidget String
@@ -306,8 +318,8 @@ lineEdit givenAttributes value =
         html =
             Html.input attributes []
 
-        update message self =
-            case Decode.decodeValue Decode.string message of
+        update (Msg json) self =
+            case Decode.decodeValue Decode.string json of
                 Ok newValue ->
                     lineEdit givenAttributes newValue
 
@@ -335,6 +347,9 @@ custom :
     -> InputWidget a
 custom spec =
     let
+        toMsg =
+            spec.encodeMsg >> Msg
+
         ( initModel, initRequest ) =
             spec.init
 
@@ -342,10 +357,10 @@ custom spec =
             spec.value initModel
 
         html =
-            Html.map spec.encodeMsg (spec.view initModel)
+            Html.map toMsg (spec.view initModel)
 
-        update message self =
-            case Decode.decodeValue spec.decodeMsg message of
+        update (Msg json) self =
+            case Decode.decodeValue spec.decodeMsg json of
                 Ok decodedMessage ->
                     let
                         newState =
@@ -357,10 +372,10 @@ custom spec =
                     current self
 
         request =
-            Cmd.map spec.encodeMsg initRequest
+            Cmd.map toMsg initRequest
 
         subscriptions =
-            Sub.map spec.encodeMsg (spec.subscriptions initModel)
+            Sub.map toMsg (spec.subscriptions initModel)
     in
         InputWidget
             { value = value
