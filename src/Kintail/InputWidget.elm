@@ -372,30 +372,10 @@ custom spec =
 
 
 app : InputWidget a -> Program Never
-app initialInputWidget =
-    let
-        (InputWidget initialImpl) =
-            initialInputWidget
-
-        init =
-            ( initialInputWidget, initialImpl.request )
-
-        view (InputWidget impl) =
-            impl.html
-
-        update message ((InputWidget impl) as inputWidget) =
-            let
-                ((InputWidget newImpl) as newInputWidget) =
-                    impl.update message inputWidget
-            in
-                ( newInputWidget, newImpl.request )
-
-        subscriptions (InputWidget impl) =
-            impl.subscriptions
-    in
-        Html.program
-            { init = init
-            , view = view
-            , update = update
-            , subscriptions = subscriptions
-            }
+app inputWidget =
+    Html.program
+        { init = init identity inputWidget
+        , view = view identity
+        , update = update identity
+        , subscriptions = subscriptions identity
+        }
