@@ -17,22 +17,22 @@ type alias Model =
 
 model : Model
 model =
-    { checkbox = InputWidget.checkbox [] False, timesChanged = 0 }
+    { checkbox = InputWidget.checkbox [] False
+    , timesChanged = 0
+    }
 
 
 update : Msg -> Model -> Model
-update message currentModel =
-    case message of
-        CheckboxMsg msg ->
-            { checkbox = InputWidget.update msg currentModel.checkbox
-            , timesChanged = currentModel.timesChanged + 1
-            }
+update (CheckboxMsg msg) currentModel =
+    { checkbox = InputWidget.update msg currentModel.checkbox
+    , timesChanged = currentModel.timesChanged + 1
+    }
 
 
 view : Model -> Html Msg
 view model =
     let
-        label =
+        labelText =
             toString (InputWidget.value model.checkbox)
                 ++ ", changed "
                 ++ toString model.timesChanged
@@ -40,7 +40,7 @@ view model =
     in
         Html.div []
             [ Html.div [] [ InputWidget.view CheckboxMsg model.checkbox ]
-            , Html.div [] [ Html.text label ]
+            , Html.div [] [ Html.text labelText ]
             ]
 
 
