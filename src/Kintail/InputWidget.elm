@@ -1,10 +1,8 @@
 module Kintail.InputWidget
     exposing
         ( InputWidget
-        , State
         , Msg
         , Container
-        , init
         , value
         , view
         , update
@@ -38,10 +36,6 @@ type InputWidget a
         }
 
 
-type State msg a
-    = State (Msg -> msg) (InputWidget a)
-
-
 type Msg
     = Msg Value
 
@@ -50,34 +44,19 @@ type alias Container =
     List (Html Msg) -> Html Msg
 
 
-init : (Msg -> msg) -> InputWidget a -> State msg a
-init tag ((InputWidget impl) as inputWidget) =
-    State tag inputWidget
-
-
-value : State msg a -> a
-value (State tag (InputWidget impl)) =
+value : InputWidget a -> a
+value (InputWidget impl) =
     impl.value
 
 
-view : State msg a -> Html msg
-view (State tag (InputWidget impl)) =
+view : (Msg -> msg) -> InputWidget a -> Html msg
+view tag (InputWidget impl) =
     Html.map tag impl.html
 
 
-update : Msg -> State msg a -> State msg a
-update message state =
-    let
-        (State tag inputWidget) =
-            state
-
-        (InputWidget impl) =
-            inputWidget
-
-        newInputWidget =
-            impl.update message inputWidget
-    in
-        State tag newInputWidget
+update : Msg -> InputWidget a -> InputWidget a
+update message ((InputWidget impl) as inputWidget) =
+    impl.update message inputWidget
 
 
 encodeMsg : Msg -> Value
@@ -332,7 +311,7 @@ custom spec =
 app : InputWidget a -> Program Never
 app inputWidget =
     Html.beginnerProgram
-        { model = init identity inputWidget
-        , view = view
+        { model = inputWidget
+        , view = view identity
         , update = update
         }
