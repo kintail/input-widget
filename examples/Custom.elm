@@ -13,38 +13,23 @@ type CounterMsg
     = Click
 
 
+button =
+    Html.button [ Html.onClick Click ] [ Html.text "+" ]
+
+
 counter : Int -> InputWidget Int
 counter initialCount =
     let
-        model =
-            initialCount
-
         view count =
-            Html.span []
-                [ Html.text (toString count)
-                , Html.button [ Html.type' "button", Html.onClick Click ]
-                    [ Html.text "+" ]
-                ]
-
-        update msg count =
-            count + 1
-
-        value =
-            identity
-
-        encodeMsg =
-            always Encode.null
-
-        decodeMsg =
-            Decode.succeed Click
+            Html.span [] [ Html.text (toString count), button ]
     in
         InputWidget.custom
-            { model = model
+            { model = initialCount
             , view = view
-            , update = update
-            , value = value
-            , encodeMsg = encodeMsg
-            , decodeMsg = decodeMsg
+            , update = \Click count -> count + 1
+            , value = identity
+            , encodeMsg = always Encode.null
+            , decodeMsg = Decode.succeed Click
             }
 
 
