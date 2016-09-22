@@ -15,16 +15,16 @@ type alias Model =
     }
 
 
-init : ( Model, Cmd Msg )
-init =
+model : Model
+model =
     let
-        ( checkboxState, checkboxCmd ) =
+        checkboxState =
             InputWidget.init CheckboxMsg (InputWidget.checkbox [] False)
     in
-        ( { checkboxState = checkboxState, timesChanged = 0 }, checkboxCmd )
+        { checkboxState = checkboxState, timesChanged = 0 }
 
 
-update : Msg -> Model -> ( Model, Cmd Msg )
+update : Msg -> Model -> Model
 update message currentModel =
     case message of
         CheckboxMsg msg ->
@@ -32,15 +32,12 @@ update message currentModel =
                 currentCheckboxState =
                     currentModel.checkboxState
 
-                ( updatedCheckboxState, checkboxCmd ) =
+                updatedCheckboxState =
                     InputWidget.update msg currentCheckboxState
-
-                updatedModel =
-                    { checkboxState = updatedCheckboxState
-                    , timesChanged = currentModel.timesChanged + 1
-                    }
             in
-                ( updatedModel, checkboxCmd )
+                { checkboxState = updatedCheckboxState
+                , timesChanged = currentModel.timesChanged + 1
+                }
 
 
 view : Model -> Html Msg
@@ -58,16 +55,10 @@ view model =
             ]
 
 
-subscriptions : Model -> Sub Msg
-subscriptions model =
-    InputWidget.subscriptions model.checkboxState
-
-
 main : Program Never
 main =
-    Html.program
-        { init = init
+    Html.beginnerProgram
+        { model = model
         , update = update
         , view = view
-        , subscriptions = subscriptions
         }

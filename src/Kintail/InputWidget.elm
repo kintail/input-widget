@@ -8,7 +8,6 @@ module Kintail.InputWidget
         , value
         , view
         , update
-        , subscriptions
         , encodeMsg
         , decodeMsg
         , wrap
@@ -36,8 +35,6 @@ type InputWidget a
         { value : a
         , html : Html Msg
         , update : Msg -> InputWidget a -> InputWidget a
-        , request : Cmd Msg
-        , subscriptions : Sub Msg
         }
 
 
@@ -53,9 +50,9 @@ type alias Container =
     List (Html Msg) -> Html Msg
 
 
-init : (Msg -> msg) -> InputWidget a -> ( State msg a, Cmd msg )
+init : (Msg -> msg) -> InputWidget a -> State msg a
 init tag ((InputWidget impl) as inputWidget) =
-    ( State tag (current inputWidget), Cmd.map tag impl.request )
+    State tag inputWidget
 
 
 value : State msg a -> a
@@ -68,7 +65,7 @@ view (State tag (InputWidget impl)) =
     Html.map tag impl.html
 
 
-update : Msg -> State msg a -> ( State msg a, Cmd msg )
+update : Msg -> State msg a -> State msg a
 update message state =
     let
         (State tag inputWidget) =
@@ -80,12 +77,7 @@ update message state =
         newInputWidget =
             impl.update message inputWidget
     in
-        init tag newInputWidget
-
-
-subscriptions : State msg a -> Sub msg
-subscriptions (State tag (InputWidget impl)) =
-    Sub.map tag impl.subscriptions
+        State tag newInputWidget
 
 
 encodeMsg : Msg -> Value
@@ -96,11 +88,6 @@ encodeMsg (Msg json) =
 decodeMsg : Decoder Msg
 decodeMsg =
     Decode.customDecoder Decode.value (\json -> Ok (Msg json))
-
-
-current : InputWidget a -> InputWidget a
-current (InputWidget impl) =
-    InputWidget { impl | request = Cmd.none }
 
 
 wrap : Container -> InputWidget a -> InputWidget a
@@ -122,8 +109,6 @@ wrap container inputWidget =
             { value = value
             , html = html
             , update = update
-            , request = impl.request
-            , subscriptions = impl.subscriptions
             }
 
 
@@ -146,8 +131,6 @@ append decoration container inputWidget =
             { value = value
             , html = html
             , update = update
-            , request = impl.request
-            , subscriptions = impl.subscriptions
             }
 
 
@@ -170,8 +153,6 @@ prepend decoration container inputWidget =
             { value = value
             , html = html
             , update = update
-            , request = impl.request
-            , subscriptions = impl.subscriptions
             }
 
 
@@ -188,8 +169,6 @@ map function inputWidget =
             { value = function impl.value
             , html = impl.html
             , update = update
-            , request = impl.request
-            , subscriptions = impl.subscriptions
             }
 
 
@@ -232,42 +211,22 @@ map2 function container inputWidgetA inputWidgetB =
                         updatedWidgetA =
                             implA.update (Msg jsonA) inputWidgetA
                     in
-                        map2 function
-                            container
-                            updatedWidgetA
-                            (current inputWidgetB)
+                        map2 function container updatedWidgetA inputWidgetB
 
                 Ok ( 1, jsonB ) ->
                     let
                         updatedWidgetB =
                             implB.update (Msg jsonB) inputWidgetB
                     in
-                        map2 function
-                            container
-                            (current inputWidgetA)
-                            updatedWidgetB
+                        map2 function container inputWidgetA updatedWidgetB
 
                 _ ->
-                    current self
-
-        request =
-            Cmd.batch
-                [ Cmd.map (tag 0) implA.request
-                , Cmd.map (tag 1) implB.request
-                ]
-
-        subscriptions =
-            Sub.batch
-                [ Sub.map (tag 0) implA.subscriptions
-                , Sub.map (tag 1) implB.subscriptions
-                ]
+                    self
     in
         InputWidget
             { value = value
             , html = html
             , update = update
-            , request = request
-            , subscriptions = subscriptions
             }
 
 
@@ -294,14 +253,12 @@ checkbox givenAttributes value =
                     checkbox givenAttributes newValue
 
                 Err description ->
-                    current self
+                    self
     in
         InputWidget
             { value = value
             , html = html
             , update = update
-            , request = Cmd.none
-            , subscriptions = Sub.none
             }
 
 
@@ -324,22 +281,19 @@ lineEdit givenAttributes value =
                     lineEdit givenAttributes newValue
 
                 Err description ->
-                    current self
+                    self
     in
         InputWidget
             { value = value
             , html = html
             , update = update
-            , request = Cmd.none
-            , subscriptions = Sub.none
             }
 
 
 custom :
-    { init : ( model, Cmd msg )
+    { model : model
     , view : model -> Html msg
-    , update : msg -> model -> ( model, Cmd msg )
-    , subscriptions : model -> Sub msg
+    , update : msg -> model -> model
     , value : model -> a
     , encodeMsg : msg -> Value
     , decodeMsg : Decoder msg
@@ -350,47 +304,35 @@ custom spec =
         toMsg =
             spec.encodeMsg >> Msg
 
-        ( initModel, initRequest ) =
-            spec.init
-
         value =
-            spec.value initModel
+            spec.value spec.model
 
         html =
-            Html.map toMsg (spec.view initModel)
+            Html.map toMsg (spec.view spec.model)
 
         update (Msg json) self =
             case Decode.decodeValue spec.decodeMsg json of
                 Ok decodedMessage ->
                     let
-                        newState =
-                            spec.update decodedMessage initModel
+                        updatedModel =
+                            spec.update decodedMessage spec.model
                     in
-                        custom { spec | init = newState }
+                        custom { spec | model = updatedModel }
 
                 Err _ ->
-                    current self
-
-        request =
-            Cmd.map toMsg initRequest
-
-        subscriptions =
-            Sub.map toMsg (spec.subscriptions initModel)
+                    self
     in
         InputWidget
             { value = value
             , html = html
             , update = update
-            , request = request
-            , subscriptions = subscriptions
             }
 
 
 app : InputWidget a -> Program Never
 app inputWidget =
-    Html.program
-        { init = init identity inputWidget
+    Html.beginnerProgram
+        { model = init identity inputWidget
         , view = view
         , update = update
-        , subscriptions = subscriptions
         }
