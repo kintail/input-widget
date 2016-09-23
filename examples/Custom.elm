@@ -11,6 +11,7 @@ type CounterMsg
     = Click
 
 
+button : Html CounterMsg
 button =
     Html.button [ Html.onClick Click ] [ Html.text "+" ]
 
