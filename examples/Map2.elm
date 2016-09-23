@@ -1,6 +1,7 @@
 module Map2 exposing (..)
 
 import Html exposing (Html)
+import Html.App as Html
 import Kintail.InputWidget as InputWidget exposing (InputWidget)
 
 
@@ -35,4 +36,8 @@ main =
         widget values =
             Html.div [] (checkboxes values ++ [ label values ])
     in
-        InputWidget.app widget ( False, True )
+        Html.beginnerProgram
+            { model = ( False, True )
+            , view = widget
+            , update = always
+            }

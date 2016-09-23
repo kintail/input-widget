@@ -7,7 +7,6 @@ module Kintail.InputWidget
         , checkbox
         , lineEdit
         , custom
-        , app
         )
 
 import Json.Encode as Encode exposing (Value)
@@ -69,12 +68,3 @@ lineEdit attributes value =
 custom : (a -> Html msg) -> (msg -> a -> a) -> InputWidget a
 custom view update value =
     view value |> Html.map (\message -> update message value)
-
-
-app : InputWidget a -> a -> Program Never
-app inputWidget initialValue =
-    Html.beginnerProgram
-        { model = initialValue
-        , view = inputWidget
-        , update = always
-        }
