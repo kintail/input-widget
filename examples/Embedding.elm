@@ -15,23 +15,11 @@ type alias Model =
     }
 
 
-model : Model
-model =
-    { value = False
-    , timesChanged = 0
-    }
-
-
 update : Msg -> Model -> Model
 update (NewValue newValue) currentModel =
     { value = newValue
     , timesChanged = currentModel.timesChanged + 1
     }
-
-
-checkbox : InputWidget Bool
-checkbox =
-    InputWidget.checkbox []
 
 
 view : Model -> Html Msg
@@ -44,7 +32,8 @@ view model =
                 ++ " times"
     in
         Html.div []
-            [ Html.div [] [ checkbox model.value |> Html.map NewValue ]
+            [ Html.div [] [ InputWidget.checkbox [] model.value ]
+                |> Html.map NewValue
             , Html.div [] [ Html.text labelText ]
             ]
 
@@ -52,7 +41,7 @@ view model =
 main : Program Never
 main =
     Html.beginnerProgram
-        { model = model
+        { model = { value = False, timesChanged = 0 }
         , update = update
         , view = view
         }
