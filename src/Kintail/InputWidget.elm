@@ -156,6 +156,7 @@ tag index (Msg json) =
     Msg (Encode.list [ Encode.int index, json ])
 
 
+decodeTagged : Value -> Result String ( Int, Value )
 decodeTagged =
     Decode.decodeValue (Decode.tuple2 (,) Decode.int Decode.value)
 
@@ -209,10 +210,12 @@ map2 function container inputWidgetA inputWidgetB =
             }
 
 
+checkboxType : Html.Attribute Msg
 checkboxType =
     Html.type' "checkbox"
 
 
+onCheck : Html.Attribute Msg
 onCheck =
     Html.onCheck (Encode.bool >> Msg)
 
@@ -241,6 +244,7 @@ checkbox givenAttributes value =
             }
 
 
+onInput : Html.Attribute Msg
 onInput =
     Html.onInput (Encode.string >> Msg)
 
