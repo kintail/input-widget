@@ -88,13 +88,9 @@ lineEdit attributes value =
     Html.input (Html.value value :: Html.onInput identity :: attributes) []
 
 
-custom :
-    { view : a -> Html msg
-    , update : msg -> a -> a
-    }
-    -> InputWidget a
-custom { view, update } value =
-    Html.map (\message -> update message value) (view value)
+custom : (a -> Html msg) -> (msg -> a -> a) -> InputWidget a
+custom view update value =
+    view value |> Html.map (\message -> update message value)
 
 
 app : InputWidget a -> a -> Program Never

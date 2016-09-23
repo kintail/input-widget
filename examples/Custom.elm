@@ -34,10 +34,7 @@ counter =
                 Increment ->
                     count + 1
     in
-        InputWidget.custom
-            { view = view
-            , update = update
-            }
+        InputWidget.custom view update
 
 
 
