@@ -6,40 +6,45 @@ import Kintail.InputWidget as InputWidget exposing (InputWidget)
 
 
 type Msg
-    = CheckboxMsg InputWidget.Msg
+    = NewValue Bool
 
 
 type alias Model =
-    { checkbox : InputWidget Bool
+    { value : Bool
     , timesChanged : Int
     }
 
 
 model : Model
 model =
-    { checkbox = InputWidget.checkbox [] False
+    { value = False
     , timesChanged = 0
     }
 
 
 update : Msg -> Model -> Model
-update (CheckboxMsg msg) currentModel =
-    { checkbox = InputWidget.update msg currentModel.checkbox
+update (NewValue newValue) currentModel =
+    { value = newValue
     , timesChanged = currentModel.timesChanged + 1
     }
+
+
+checkbox : InputWidget Bool
+checkbox =
+    InputWidget.checkbox []
 
 
 view : Model -> Html Msg
 view model =
     let
         labelText =
-            toString (InputWidget.value model.checkbox)
+            toString model.value
                 ++ ", changed "
                 ++ toString model.timesChanged
                 ++ " times"
     in
         Html.div []
-            [ Html.div [] [ InputWidget.view CheckboxMsg model.checkbox ]
+            [ Html.div [] [ checkbox model.value |> Html.map NewValue ]
             , Html.div [] [ Html.text labelText ]
             ]
 

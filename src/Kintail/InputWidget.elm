@@ -1,13 +1,7 @@
 module Kintail.InputWidget
     exposing
         ( InputWidget
-        , Msg
         , Container
-        , value
-        , view
-        , update
-        , encodeMsg
-        , decodeMsg
         , wrap
         , append
         , prepend
@@ -28,294 +22,85 @@ import Html.App as Html
 import Basics.Extra exposing (..)
 
 
-type InputWidget a
-    = InputWidget
-        { value : a
-        , html : Html Msg
-        , update : Msg -> InputWidget a -> InputWidget a
-        }
+type alias InputWidget a =
+    a -> Html a
 
 
-type Msg
-    = Msg Value
+type alias Container a =
+    List (Html a) -> Html a
 
 
-type alias Container =
-    List (Html Msg) -> Html Msg
+wrap : Container a -> InputWidget a -> InputWidget a
+wrap container inputWidget value =
+    container [ inputWidget value ]
 
 
-value : InputWidget a -> a
-value (InputWidget impl) =
-    impl.value
+append : (a -> Html Never) -> Container a -> InputWidget a -> InputWidget a
+append decoration container inputWidget value =
+    container [ inputWidget value, Html.map never (decoration value) ]
 
 
-view : (Msg -> msg) -> InputWidget a -> Html msg
-view tag (InputWidget impl) =
-    Html.map tag impl.html
+prepend : (a -> Html Never) -> Container a -> InputWidget a -> InputWidget a
+prepend decoration container inputWidget value =
+    container [ Html.map never (decoration value), inputWidget value ]
 
 
-update : Msg -> InputWidget a -> InputWidget a
-update message ((InputWidget impl) as inputWidget) =
-    impl.update message inputWidget
-
-
-encodeMsg : Msg -> Value
-encodeMsg (Msg json) =
-    json
-
-
-decodeMsg : Decoder Msg
-decodeMsg =
-    Decode.customDecoder Decode.value (\json -> Ok (Msg json))
-
-
-wrap : Container -> InputWidget a -> InputWidget a
-wrap container inputWidget =
-    let
-        (InputWidget impl) =
-            inputWidget
-
-        value =
-            impl.value
-
-        html =
-            container [ impl.html ]
-
-        update message self =
-            wrap container (impl.update message inputWidget)
-    in
-        InputWidget
-            { value = value
-            , html = html
-            , update = update
-            }
-
-
-append : (a -> Html Never) -> Container -> InputWidget a -> InputWidget a
-append decoration container inputWidget =
-    let
-        (InputWidget impl) =
-            inputWidget
-
-        value =
-            impl.value
-
-        html =
-            container [ impl.html, Html.map never (decoration value) ]
-
-        update message self =
-            append decoration container (impl.update message inputWidget)
-    in
-        InputWidget
-            { value = value
-            , html = html
-            , update = update
-            }
-
-
-prepend : (a -> Html Never) -> Container -> InputWidget a -> InputWidget a
-prepend decoration container inputWidget =
-    let
-        (InputWidget impl) =
-            inputWidget
-
-        value =
-            impl.value
-
-        html =
-            container [ Html.map never (decoration value), impl.html ]
-
-        update message self =
-            prepend decoration container (impl.update message inputWidget)
-    in
-        InputWidget
-            { value = value
-            , html = html
-            , update = update
-            }
-
-
-map : (a -> b) -> InputWidget a -> InputWidget b
-map function inputWidget =
-    let
-        (InputWidget impl) =
-            inputWidget
-
-        update message self =
-            map function (impl.update message inputWidget)
-    in
-        InputWidget
-            { value = function impl.value
-            , html = impl.html
-            , update = update
-            }
-
-
-tag : Int -> Msg -> Msg
-tag index (Msg json) =
-    Msg (Encode.list [ Encode.int index, json ])
-
-
-decodeTagged : Value -> Result String ( Int, Value )
-decodeTagged =
-    Decode.decodeValue (Decode.tuple2 (,) Decode.int Decode.value)
+map : (a -> b) -> (b -> a) -> InputWidget a -> InputWidget b
+map to from inputWidget value =
+    Html.map to (inputWidget (from value))
 
 
 map2 :
     (a -> b -> c)
-    -> Container
+    -> (c -> a)
+    -> (c -> b)
+    -> Container c
     -> InputWidget a
     -> InputWidget b
     -> InputWidget c
-map2 function container inputWidgetA inputWidgetB =
+map2 composeC extractA extractB container inputWidgetA inputWidgetB valueC =
     let
-        (InputWidget implA) =
-            inputWidgetA
+        valueA =
+            extractA valueC
 
-        (InputWidget implB) =
-            inputWidgetB
-
-        value =
-            function implA.value implB.value
-
-        html =
-            container
-                [ Html.map (tag 0) implA.html
-                , Html.map (tag 1) implB.html
-                ]
-
-        update (Msg json) self =
-            case decodeTagged json of
-                Ok ( 0, jsonA ) ->
-                    let
-                        updatedWidgetA =
-                            implA.update (Msg jsonA) inputWidgetA
-                    in
-                        map2 function container updatedWidgetA inputWidgetB
-
-                Ok ( 1, jsonB ) ->
-                    let
-                        updatedWidgetB =
-                            implB.update (Msg jsonB) inputWidgetB
-                    in
-                        map2 function container inputWidgetA updatedWidgetB
-
-                _ ->
-                    self
+        valueB =
+            extractB valueC
     in
-        InputWidget
-            { value = value
-            , html = html
-            , update = update
-            }
+        container
+            [ Html.map (\newA -> composeC newA valueB) (inputWidgetA valueA)
+            , Html.map (\newB -> composeC valueA newB) (inputWidgetB valueB)
+            ]
 
 
-checkboxType : Html.Attribute Msg
-checkboxType =
-    Html.type' "checkbox"
+checkbox : List (Html.Attribute Bool) -> InputWidget Bool
+checkbox attributes value =
+    Html.input
+        (Html.type' "checkbox"
+            :: Html.checked value
+            :: Html.onCheck identity
+            :: attributes
+        )
+        []
 
 
-onCheck : Html.Attribute Msg
-onCheck =
-    Html.onCheck (Encode.bool >> Msg)
-
-
-checkbox : List (Html.Attribute Msg) -> Bool -> InputWidget Bool
-checkbox givenAttributes value =
-    let
-        attributes =
-            checkboxType :: Html.checked value :: onCheck :: givenAttributes
-
-        html =
-            Html.input attributes []
-
-        update (Msg json) self =
-            case Decode.decodeValue Decode.bool json of
-                Ok newValue ->
-                    checkbox givenAttributes newValue
-
-                Err description ->
-                    self
-    in
-        InputWidget
-            { value = value
-            , html = html
-            , update = update
-            }
-
-
-onInput : Html.Attribute Msg
-onInput =
-    Html.onInput (Encode.string >> Msg)
-
-
-lineEdit : List (Html.Attribute Msg) -> String -> InputWidget String
-lineEdit givenAttributes value =
-    let
-        attributes =
-            Html.value value :: onInput :: givenAttributes
-
-        html =
-            Html.input attributes []
-
-        update (Msg json) self =
-            case Decode.decodeValue Decode.string json of
-                Ok newValue ->
-                    lineEdit givenAttributes newValue
-
-                Err description ->
-                    self
-    in
-        InputWidget
-            { value = value
-            , html = html
-            , update = update
-            }
+lineEdit : List (Html.Attribute String) -> InputWidget String
+lineEdit attributes value =
+    Html.input (Html.value value :: Html.onInput identity :: attributes) []
 
 
 custom :
-    { model : model
-    , view : model -> Html msg
-    , update : msg -> model -> model
-    , value : model -> a
-    , encodeMsg : msg -> Value
-    , decodeMsg : Decoder msg
+    { view : a -> Html msg
+    , update : msg -> a -> a
     }
     -> InputWidget a
-custom spec =
-    let
-        toMsg =
-            spec.encodeMsg >> Msg
-
-        value =
-            spec.value spec.model
-
-        html =
-            Html.map toMsg (spec.view spec.model)
-
-        update (Msg json) self =
-            case Decode.decodeValue spec.decodeMsg json of
-                Ok decodedMessage ->
-                    let
-                        updatedModel =
-                            spec.update decodedMessage spec.model
-                    in
-                        custom { spec | model = updatedModel }
-
-                Err _ ->
-                    self
-    in
-        InputWidget
-            { value = value
-            , html = html
-            , update = update
-            }
+custom { view, update } value =
+    Html.map (\message -> update message value) (view value)
 
 
-app : InputWidget a -> Program Never
-app inputWidget =
+app : InputWidget a -> a -> Program Never
+app inputWidget initialValue =
     Html.beginnerProgram
-        { model = inputWidget
-        , view = view identity
-        , update = update
+        { model = initialValue
+        , view = inputWidget
+        , update = always
         }

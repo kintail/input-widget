@@ -1,54 +1,83 @@
 module Custom exposing (..)
 
 import Html exposing (Html)
+import Html.App as Html
 import Html.Events as Html
 import Json.Encode as Encode
 import Json.Decode as Decode
 import Kintail.InputWidget as InputWidget exposing (InputWidget)
 
 
+-- Counter widget
+
+
 type CounterMsg
-    = Click
+    = Increment
+    | Decrement
 
 
-button : Html CounterMsg
-button =
-    Html.button [ Html.onClick Click ] [ Html.text "+" ]
-
-
-counter : Int -> InputWidget Int
-counter initialCount =
+counter : InputWidget Int
+counter =
     let
         view count =
-            Html.span [] [ Html.text (toString count), button ]
+            Html.span []
+                [ Html.button [ Html.onClick Decrement ] [ Html.text "-" ]
+                , Html.text (toString count)
+                , Html.button [ Html.onClick Increment ] [ Html.text "+" ]
+                ]
+
+        update msg count =
+            case msg of
+                Decrement ->
+                    count - 1
+
+                Increment ->
+                    count + 1
     in
         InputWidget.custom
-            { model = initialCount
-            , view = view
-            , update = \Click count -> count + 1
-            , value = identity
-            , encodeMsg = always Encode.null
-            , decodeMsg = Decode.succeed Click
+            { view = view
+            , update = update
             }
+
+
+
+-- TEA
+
+
+type alias Model =
+    { firstValue : Int
+    , secondValue : Int
+    }
+
+
+type Msg
+    = NewFirst Int
+    | NewSecond Int
+
+
+view : Model -> Html Msg
+view { firstValue, secondValue } =
+    Html.div []
+        [ Html.div [] [ counter firstValue |> Html.map NewFirst ]
+        , Html.div [] [ counter secondValue |> Html.map NewSecond ]
+        , Html.text (toString (firstValue + secondValue))
+        ]
+
+
+update : Msg -> Model -> Model
+update msg model =
+    case msg of
+        NewFirst value ->
+            { model | firstValue = value }
+
+        NewSecond value ->
+            { model | secondValue = value }
 
 
 main : Program Never
 main =
-    let
-        div =
-            Html.div []
-
-        firstCounter =
-            InputWidget.wrap div (counter 10)
-
-        secondCounter =
-            InputWidget.wrap div (counter 0)
-
-        label sum =
-            Html.text (toString sum)
-
-        widget =
-            InputWidget.map2 (+) div firstCounter secondCounter
-                |> InputWidget.append label div
-    in
-        InputWidget.app widget
+    Html.beginnerProgram
+        { model = { firstValue = 10, secondValue = 0 }
+        , view = view
+        , update = update
+        }

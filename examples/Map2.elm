@@ -13,31 +13,29 @@ main =
         span =
             Html.span []
 
-        description firstValue secondValue =
-            case ( firstValue, secondValue ) of
-                ( True, True ) ->
-                    "Both"
+        label values =
+            let
+                description =
+                    case values of
+                        ( True, True ) ->
+                            "Both"
 
-                ( True, False ) ->
-                    "First only"
+                        ( True, False ) ->
+                            "First only"
 
-                ( False, True ) ->
-                    "Second only"
+                        ( False, True ) ->
+                            "Second only"
 
-                ( False, False ) ->
-                    "Neither"
+                        ( False, False ) ->
+                            "Neither"
+            in
+                div [ Html.text description ]
 
-        label text =
-            div [ Html.text text ]
-
-        firstCheckbox =
-            InputWidget.checkbox [] False
-
-        secondCheckbox =
-            InputWidget.checkbox [] True
+        checkbox =
+            InputWidget.checkbox []
 
         widget =
-            InputWidget.map2 description span firstCheckbox secondCheckbox
+            InputWidget.map2 (,) fst snd span checkbox checkbox
                 |> InputWidget.prepend label div
     in
-        InputWidget.app widget
+        InputWidget.app widget ( True, True )
