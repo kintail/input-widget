@@ -5,6 +5,7 @@ module Kintail.InputWidget
         , map
         , map2
         , checkbox
+        , radioButton
         , lineEdit
         , custom
         )
@@ -55,6 +56,17 @@ checkbox attributes value =
         (Html.type' "checkbox"
             :: Html.checked value
             :: Html.onCheck identity
+            :: attributes
+        )
+        []
+
+
+radioButton : List (Html.Attribute a) -> a -> InputWidget a
+radioButton attributes value currentValue =
+    Html.input
+        (Html.type' "radio"
+            :: Html.checked (value == currentValue)
+            :: Html.onCheck (always value)
             :: attributes
         )
         []
