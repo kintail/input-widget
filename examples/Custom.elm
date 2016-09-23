@@ -38,7 +38,7 @@ counter =
 
 
 
--- TEA
+-- Application
 
 
 type alias Model =
@@ -48,15 +48,15 @@ type alias Model =
 
 
 type Msg
-    = NewFirst Int
-    | NewSecond Int
+    = NewFirstValue Int
+    | NewSecondValue Int
 
 
 view : Model -> Html Msg
 view { firstValue, secondValue } =
     Html.div []
-        [ Html.div [] [ counter firstValue |> Html.map NewFirst ]
-        , Html.div [] [ counter secondValue |> Html.map NewSecond ]
+        [ Html.div [] [ counter firstValue ] |> Html.map NewFirstValue
+        , Html.div [] [ counter secondValue ] |> Html.map NewSecondValue
         , Html.text (toString (firstValue + secondValue))
         ]
 
@@ -64,10 +64,10 @@ view { firstValue, secondValue } =
 update : Msg -> Model -> Model
 update msg model =
     case msg of
-        NewFirst value ->
+        NewFirstValue value ->
             { model | firstValue = value }
 
-        NewSecond value ->
+        NewSecondValue value ->
             { model | secondValue = value }
 
 
