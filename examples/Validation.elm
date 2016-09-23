@@ -1,6 +1,6 @@
 module Validation exposing (..)
 
-import Html
+import Html exposing (Html)
 import Html.Attributes as Html
 import Html.App as Html
 import Kintail.InputWidget as InputWidget exposing (InputWidget)
@@ -12,27 +12,6 @@ type alias Person =
     }
 
 
-inputWidget : InputWidget Person
-inputWidget =
-    let
-        firstNameWidget value =
-            Html.div []
-                [ InputWidget.lineEdit [ Html.placeholder "First name" ] value ]
-
-        lastNameWidget value =
-            Html.div []
-                [ InputWidget.lineEdit [ Html.placeholder "Last name" ] value ]
-    in
-        \person ->
-            Html.div []
-                (InputWidget.map2 Person
-                    ( .firstName, firstNameWidget )
-                    ( .lastName, lastNameWidget )
-                    person
-                )
-
-
-message : Person -> String
 message { firstName, lastName } =
     case ( firstName, lastName ) of
         ( "", "" ) ->
@@ -48,12 +27,30 @@ message { firstName, lastName } =
             "Hello " ++ firstName ++ " " ++ lastName ++ "!"
 
 
+widget : InputWidget Person
+widget =
+    let
+        firstNameWidget value =
+            Html.div []
+                [ InputWidget.lineEdit [ Html.placeholder "First name" ] value ]
+
+        lastNameWidget value =
+            Html.div []
+                [ InputWidget.lineEdit [ Html.placeholder "Last name" ] value ]
+
+        fields =
+            InputWidget.map2 Person
+                ( .firstName, firstNameWidget )
+                ( .lastName, lastNameWidget )
+    in
+        \person ->
+            Html.div [] (fields person ++ [ Html.text (message person) ])
+
+
 main : Program Never
 main =
     Html.beginnerProgram
         { model = Person "" ""
-        , view =
-            \person ->
-                Html.div [] [ inputWidget person, Html.text (message person) ]
+        , view = widget
         , update = always
         }
