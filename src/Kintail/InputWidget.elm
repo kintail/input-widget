@@ -1,10 +1,7 @@
 module Kintail.InputWidget
     exposing
         ( InputWidget
-        , Container
-        , wrap
-        , append
-        , prepend
+        , Group
         , map
         , map2
         , checkbox
@@ -26,23 +23,8 @@ type alias InputWidget a =
     a -> Html a
 
 
-type alias Container a =
-    List (Html a) -> Html a
-
-
-wrap : Container a -> InputWidget a -> InputWidget a
-wrap container inputWidget value =
-    container [ inputWidget value ]
-
-
-append : (a -> Html Never) -> Container a -> InputWidget a -> InputWidget a
-append decoration container inputWidget value =
-    container [ inputWidget value, Html.map never (decoration value) ]
-
-
-prepend : (a -> Html Never) -> Container a -> InputWidget a -> InputWidget a
-prepend decoration container inputWidget value =
-    container [ Html.map never (decoration value), inputWidget value ]
+type alias Group a =
+    a -> List (Html a)
 
 
 map : (a -> b) -> (b -> a) -> InputWidget a -> InputWidget b
@@ -52,13 +34,10 @@ map to from inputWidget value =
 
 map2 :
     (a -> b -> c)
-    -> (c -> a)
-    -> (c -> b)
-    -> Container c
-    -> InputWidget a
-    -> InputWidget b
-    -> InputWidget c
-map2 composeC extractA extractB container inputWidgetA inputWidgetB valueC =
+    -> ( c -> a, InputWidget a )
+    -> ( c -> b, InputWidget b )
+    -> Group c
+map2 composeC ( extractA, inputWidgetA ) ( extractB, inputWidgetB ) valueC =
     let
         valueA =
             extractA valueC
@@ -66,10 +45,9 @@ map2 composeC extractA extractB container inputWidgetA inputWidgetB valueC =
         valueB =
             extractB valueC
     in
-        container
-            [ Html.map (\newA -> composeC newA valueB) (inputWidgetA valueA)
-            , Html.map (\newB -> composeC valueA newB) (inputWidgetB valueB)
-            ]
+        [ Html.map (\newA -> composeC newA valueB) (inputWidgetA valueA)
+        , Html.map (\newB -> composeC valueA newB) (inputWidgetB valueB)
+        ]
 
 
 checkbox : List (Html.Attribute Bool) -> InputWidget Bool

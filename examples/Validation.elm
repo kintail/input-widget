@@ -2,47 +2,58 @@ module Validation exposing (..)
 
 import Html
 import Html.Attributes as Html
+import Html.App as Html
 import Kintail.InputWidget as InputWidget exposing (InputWidget)
 
 
 type alias Person =
-    { first : String
-    , last : String
+    { firstName : String
+    , lastName : String
     }
 
 
-personWidget : InputWidget Person
-personWidget =
+inputWidget : InputWidget Person
+inputWidget =
     let
-        div =
+        firstNameWidget value =
             Html.div []
+                [ InputWidget.lineEdit [ Html.placeholder "First name" ] value ]
 
-        firstNameWidget =
-            InputWidget.lineEdit [ Html.placeholder "First name" ]
-                |> InputWidget.wrap div
-
-        lastNameWidget =
-            InputWidget.lineEdit [ Html.placeholder "Last name" ]
-                |> InputWidget.wrap div
-
-        message person =
-            case ( person.first, person.last ) of
-                ( "", "" ) ->
-                    "First and last names are empty"
-
-                ( "", last ) ->
-                    "First name is empty"
-
-                ( first, "" ) ->
-                    "Last name is empty"
-
-                ( first, last ) ->
-                    "Hello " ++ first ++ " " ++ last ++ "!"
+        lastNameWidget value =
+            Html.div []
+                [ InputWidget.lineEdit [ Html.placeholder "Last name" ] value ]
     in
-        InputWidget.map2 Person .first .last div firstNameWidget lastNameWidget
-            |> InputWidget.append (message >> Html.text) div
+        \person ->
+            Html.div []
+                (InputWidget.map2 Person
+                    ( .firstName, firstNameWidget )
+                    ( .lastName, lastNameWidget )
+                    person
+                )
+
+
+message : Person -> String
+message { firstName, lastName } =
+    case ( firstName, lastName ) of
+        ( "", "" ) ->
+            "First and last names are empty"
+
+        ( "", _ ) ->
+            "First name is empty"
+
+        ( _, "" ) ->
+            "Last name is empty"
+
+        _ ->
+            "Hello " ++ firstName ++ " " ++ lastName ++ "!"
 
 
 main : Program Never
 main =
-    InputWidget.app personWidget { first = "", last = "" }
+    Html.beginnerProgram
+        { model = Person "" ""
+        , view =
+            \person ->
+                Html.div [] [ inputWidget person, Html.text (message person) ]
+        , update = always
+        }

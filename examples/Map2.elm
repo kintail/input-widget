@@ -7,12 +7,6 @@ import Kintail.InputWidget as InputWidget exposing (InputWidget)
 main : Program Never
 main =
     let
-        div =
-            Html.div []
-
-        span =
-            Html.span []
-
         label values =
             let
                 description =
@@ -29,13 +23,16 @@ main =
                         ( False, False ) ->
                             "Neither"
             in
-                div [ Html.text description ]
+                Html.text description
 
         checkbox =
             InputWidget.checkbox []
 
-        widget =
-            InputWidget.map2 (,) fst snd span checkbox checkbox
-                |> InputWidget.prepend label div
+        checkboxes =
+            InputWidget.map2 (,) ( fst, checkbox ) ( snd, checkbox )
+
+        widget : InputWidget ( Bool, Bool )
+        widget values =
+            Html.div [] (checkboxes values ++ [ label values ])
     in
-        InputWidget.app widget ( True, True )
+        InputWidget.app widget ( False, True )
