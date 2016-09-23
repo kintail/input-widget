@@ -1,11 +1,9 @@
 module Custom exposing (..)
 
 import Html exposing (Html)
-import Html.Attributes as Html
 import Html.Events as Html
 import Json.Encode as Encode
 import Json.Decode as Decode
-import Time
 import Kintail.InputWidget as InputWidget exposing (InputWidget)
 
 
