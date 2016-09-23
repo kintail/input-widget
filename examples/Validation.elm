@@ -1,58 +1,56 @@
 module Validation exposing (..)
 
-import Html
+import Html exposing (Html)
 import Html.Attributes as Html
+import Html.App as Html
 import Kintail.InputWidget as InputWidget exposing (InputWidget)
 
 
 type alias Person =
-    { first : String
-    , last : String
+    { firstName : String
+    , lastName : String
     }
 
 
-makePerson : String -> String -> Result String Person
-makePerson first last =
-    case ( first, last ) of
+message { firstName, lastName } =
+    case ( firstName, lastName ) of
         ( "", "" ) ->
-            Err "First and last names are empty"
+            "First and last names are empty"
 
         ( "", _ ) ->
-            Err "First name is empty"
+            "First name is empty"
 
         ( _, "" ) ->
-            Err "Last name is empty"
+            "Last name is empty"
 
         _ ->
-            Ok { first = first, last = last }
+            "Hello " ++ firstName ++ " " ++ lastName ++ "!"
 
 
-personWidget : InputWidget (Result String Person)
-personWidget =
+widget : InputWidget Person
+widget =
     let
-        div =
+        firstNameWidget value =
             Html.div []
+                [ InputWidget.lineEdit [ Html.placeholder "First name" ] value ]
 
-        firstNameWidget =
-            InputWidget.lineEdit [ Html.placeholder "First name" ] ""
-                |> InputWidget.wrap div
+        lastNameWidget value =
+            Html.div []
+                [ InputWidget.lineEdit [ Html.placeholder "Last name" ] value ]
 
-        lastNameWidget =
-            InputWidget.lineEdit [ Html.placeholder "Last name" ] ""
-                |> InputWidget.wrap div
-
-        resultHtml personResult =
-            case personResult of
-                Err errorMessge ->
-                    div [ Html.text errorMessge ]
-
-                Ok { first, last } ->
-                    div [ Html.text ("Hello " ++ first ++ " " ++ last ++ "!") ]
+        fields =
+            InputWidget.map2 Person
+                ( .firstName, firstNameWidget )
+                ( .lastName, lastNameWidget )
     in
-        InputWidget.map2 makePerson div firstNameWidget lastNameWidget
-            |> InputWidget.append resultHtml div
+        \person ->
+            Html.div [] (fields person ++ [ Html.text (message person) ])
 
 
 main : Program Never
 main =
-    InputWidget.app personWidget
+    Html.beginnerProgram
+        { model = Person "" ""
+        , view = widget
+        , update = always
+        }

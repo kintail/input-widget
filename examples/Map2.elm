@@ -1,43 +1,42 @@
 module Map2 exposing (..)
 
 import Html exposing (Html)
+import Html.App as Html
 import Kintail.InputWidget as InputWidget exposing (InputWidget)
+
+
+description : ( Bool, Bool ) -> String
+description values =
+    case values of
+        ( True, True ) ->
+            "Both"
+
+        ( True, False ) ->
+            "First only"
+
+        ( False, True ) ->
+            "Second only"
+
+        ( False, False ) ->
+            "Neither"
 
 
 main : Program Never
 main =
     let
-        div =
+        checkbox =
+            InputWidget.checkbox []
+
+        checkboxPair =
+            InputWidget.map2 (,) ( fst, checkbox ) ( snd, checkbox )
+
+        widget : InputWidget ( Bool, Bool )
+        widget values =
             Html.div []
-
-        span =
-            Html.span []
-
-        description firstValue secondValue =
-            case ( firstValue, secondValue ) of
-                ( True, True ) ->
-                    "Both"
-
-                ( True, False ) ->
-                    "First only"
-
-                ( False, True ) ->
-                    "Second only"
-
-                ( False, False ) ->
-                    "Neither"
-
-        label text =
-            div [ Html.text text ]
-
-        firstCheckbox =
-            InputWidget.checkbox [] False
-
-        secondCheckbox =
-            InputWidget.checkbox [] True
-
-        widget =
-            InputWidget.map2 description span firstCheckbox secondCheckbox
-                |> InputWidget.prepend label div
+                (checkboxPair values ++ [ Html.text (description values) ])
     in
-        InputWidget.app widget
+        Html.beginnerProgram
+            { model = ( False, True )
+            , view = widget
+            , update = always
+            }

@@ -6,40 +6,31 @@ import Kintail.InputWidget as InputWidget exposing (InputWidget)
 
 
 type Msg
-    = CheckboxMsg InputWidget.Msg
+    = NewValue Bool
 
 
 type alias Model =
-    { checkbox : InputWidget Bool
+    { value : Bool
     , timesChanged : Int
     }
 
 
-model : Model
-model =
-    { checkbox = InputWidget.checkbox [] False
-    , timesChanged = 0
-    }
-
-
 update : Msg -> Model -> Model
-update (CheckboxMsg msg) currentModel =
-    { checkbox = InputWidget.update msg currentModel.checkbox
+update (NewValue newValue) currentModel =
+    { value = newValue
     , timesChanged = currentModel.timesChanged + 1
     }
 
 
 view : Model -> Html Msg
-view model =
+view { value, timesChanged } =
     let
         labelText =
-            toString (InputWidget.value model.checkbox)
-                ++ ", changed "
-                ++ toString model.timesChanged
-                ++ " times"
+            toString value ++ ", changed " ++ toString timesChanged ++ " times"
     in
         Html.div []
-            [ Html.div [] [ InputWidget.view CheckboxMsg model.checkbox ]
+            [ Html.div [] [ InputWidget.checkbox [] value ]
+                |> Html.map NewValue
             , Html.div [] [ Html.text labelText ]
             ]
 
@@ -47,7 +38,7 @@ view model =
 main : Program Never
 main =
     Html.beginnerProgram
-        { model = model
+        { model = { value = False, timesChanged = 0 }
         , update = update
         , view = view
         }
