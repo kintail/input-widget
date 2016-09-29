@@ -11,36 +11,18 @@ type Color
     | Blue
 
 
-type alias Model =
-    { selection : InputWidget.Selection Color }
-
-
-model =
-    { selection = InputWidget.selection [ Red ] Green [ Blue ] }
-
-
-type Msg
-    = NewSelection (InputWidget.Selection Color)
-
-
-update : Msg -> Model -> Model
-update (NewSelection newSelection) model =
-    { model | selection = newSelection }
-
-
-view : Model -> Html Msg
-view model =
+view : InputWidget.Selection Color -> Html (InputWidget.Selection Color)
+view selection =
     Html.div []
-        [ InputWidget.comboBox [] toString model.selection
-            |> Html.map NewSelection
-        , Html.text (toString (InputWidget.selected model.selection))
+        [ InputWidget.comboBox [] toString selection
+        , Html.text (toString (InputWidget.selected selection))
         ]
 
 
 main : Program Never
 main =
     Html.beginnerProgram
-        { model = model
-        , update = update
+        { model = InputWidget.selection [ Red ] Green [ Blue ]
+        , update = always
         , view = view
         }
