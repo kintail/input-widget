@@ -11,9 +11,11 @@ module Kintail.InputWidget
         , comboBox
         , selection
         , selected
+        , slider
         , custom
         )
 
+import String
 import Array exposing (Array)
 import Json.Encode as Encode exposing (Value)
 import Json.Decode as Decode exposing (Decoder)
@@ -131,6 +133,28 @@ selection previous selected following =
 selected : Selection a -> a
 selected (Selection currentItem allItems) =
     currentItem
+
+
+slider :
+    List (Html.Attribute Float)
+    -> { min : Float, max : Float, step : Float }
+    -> InputWidget Float
+slider attributes { min, max, step } value =
+    let
+        valueDecoder =
+            Decode.map (String.toFloat >> Result.withDefault value)
+                Html.targetValue
+    in
+        Html.input
+            (Html.type' "range"
+                :: Html.property "min" (Encode.float min)
+                :: Html.property "max" (Encode.float max)
+                :: Html.property "step" (Encode.float step)
+                :: Html.property "value" (Encode.float value)
+                :: Html.on "input" valueDecoder
+                :: attributes
+            )
+            []
 
 
 custom : (a -> Html msg) -> (msg -> a -> a) -> InputWidget a
