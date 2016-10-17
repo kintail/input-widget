@@ -16,7 +16,6 @@ import Html exposing (Html)
 import Html.Attributes as Html
 import Html.Events as Html
 import Html.App as Html
-import Basics.Extra exposing (..)
 
 
 checkbox : List (Html.Attribute Bool) -> Bool -> Html Bool
