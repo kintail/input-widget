@@ -1,10 +1,7 @@
 module Kintail.InputWidget
     exposing
         ( InputWidget
-        , Group
         , Selection
-        , map
-        , map2
         , checkbox
         , radioButton
         , lineEdit
@@ -30,35 +27,8 @@ type alias InputWidget a =
     a -> Html a
 
 
-type alias Group a =
-    a -> List (Html a)
-
-
 type Selection a
     = Selection a (Array a)
-
-
-map : (a -> b) -> (b -> a) -> InputWidget a -> InputWidget b
-map to from inputWidget value =
-    Html.map to (inputWidget (from value))
-
-
-map2 :
-    (a -> b -> c)
-    -> ( c -> a, InputWidget a )
-    -> ( c -> b, InputWidget b )
-    -> Group c
-map2 composeC ( extractA, inputWidgetA ) ( extractB, inputWidgetB ) valueC =
-    let
-        valueA =
-            extractA valueC
-
-        valueB =
-            extractB valueC
-    in
-        [ Html.map (\newA -> composeC newA valueB) (inputWidgetA valueA)
-        , Html.map (\newB -> composeC valueA newB) (inputWidgetB valueB)
-        ]
 
 
 checkbox : List (Html.Attribute Bool) -> InputWidget Bool

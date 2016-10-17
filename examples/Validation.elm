@@ -28,23 +28,24 @@ message { firstName, lastName } =
 
 
 widget : InputWidget Person
-widget =
+widget person =
     let
-        firstNameWidget value =
-            Html.div []
-                [ InputWidget.lineEdit [ Html.placeholder "First name" ] value ]
+        { firstName, lastName } =
+            person
 
-        lastNameWidget value =
-            Html.div []
-                [ InputWidget.lineEdit [ Html.placeholder "Last name" ] value ]
+        firstNameWidget =
+            InputWidget.lineEdit [ Html.placeholder "First name" ] firstName
+                |> Html.map (\newFirstName -> Person newFirstName lastName)
 
-        fields =
-            InputWidget.map2 Person
-                ( .firstName, firstNameWidget )
-                ( .lastName, lastNameWidget )
+        lastNameWidget =
+            InputWidget.lineEdit [ Html.placeholder "Last name" ] lastName
+                |> Html.map (\newLastName -> Person firstName newLastName)
     in
-        \person ->
-            Html.div [] (fields person ++ [ Html.text (message person) ])
+        Html.div []
+            [ Html.div [] [ firstNameWidget ]
+            , Html.div [] [ lastNameWidget ]
+            , Html.text (message person)
+            ]
 
 
 main : Program Never
