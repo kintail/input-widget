@@ -12,6 +12,7 @@ type Size
     | Large
 
 
+fontSize : Size -> String
 fontSize size =
     case size of
         Small ->
@@ -24,6 +25,7 @@ fontSize size =
             "3em"
 
 
+radioButton : Size -> Size -> Html Size
 radioButton size currentSize =
     Html.div []
         [ InputWidget.radioButton [] size currentSize
@@ -31,6 +33,7 @@ radioButton size currentSize =
         ]
 
 
+view : Size -> Html Size
 view currentSize =
     Html.div []
         [ radioButton Small currentSize

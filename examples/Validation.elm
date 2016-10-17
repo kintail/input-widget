@@ -12,6 +12,7 @@ type alias Person =
     }
 
 
+message : Person -> String
 message { firstName, lastName } =
     case ( firstName, lastName ) of
         ( "", "" ) ->
