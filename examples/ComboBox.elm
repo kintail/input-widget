@@ -11,18 +11,20 @@ type Color
     | Blue
 
 
-view : InputWidget.Selection Color -> Html (InputWidget.Selection Color)
-view selection =
-    Html.div []
-        [ InputWidget.comboBox [] toString selection
-        , Html.text (toString (InputWidget.selected selection))
-        ]
+comboBox : InputWidget Color
+comboBox =
+    InputWidget.comboBox [] toString [ Red, Green, Blue ]
+
+
+view : Color -> Html Color
+view color =
+    Html.div [] [ comboBox color, Html.text (toString color) ]
 
 
 main : Program Never
 main =
     Html.beginnerProgram
-        { model = InputWidget.selection [ Red ] Green [ Blue ]
+        { model = Green
         , update = always
         , view = view
         }

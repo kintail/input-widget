@@ -1,5 +1,6 @@
 module Recursive exposing (..)
 
+import String
 import Html exposing (Html)
 import Html.App as Html
 import Kintail.InputWidget as InputWidget exposing (InputWidget)
@@ -43,8 +44,8 @@ type ExpressionType
     | TNot
 
 
-defaultExpression : ExpressionType -> Expression
-defaultExpression expressionType =
+defaultExpressionForType : ExpressionType -> Expression
+defaultExpressionForType expressionType =
     case expressionType of
         TFalse ->
             Constant False
@@ -63,50 +64,19 @@ defaultExpression expressionType =
 
 
 typeString : ExpressionType -> String
-typeString expressionType =
-    case expressionType of
-        TFalse ->
-            "False"
-
-        TTrue ->
-            "True"
-
-        TAnd ->
-            "And"
-
-        TOr ->
-            "Or"
-
-        TNot ->
-            "Not"
-
-
-typeSelection : ExpressionType -> InputWidget.Selection ExpressionType
-typeSelection expressionType =
-    case expressionType of
-        TFalse ->
-            InputWidget.selection [] TFalse [ TTrue, TAnd, TOr, TNot ]
-
-        TTrue ->
-            InputWidget.selection [ TFalse ] TTrue [ TAnd, TOr, TNot ]
-
-        TAnd ->
-            InputWidget.selection [ TFalse, TTrue ] TAnd [ TOr, TNot ]
-
-        TOr ->
-            InputWidget.selection [ TFalse, TTrue, TAnd ] TOr [ TNot ]
-
-        TNot ->
-            InputWidget.selection [ TFalse, TTrue, TAnd, TOr ] TNot []
+typeString =
+    toString >> String.dropLeft 1
 
 
 expressionWidget : InputWidget Expression
 expressionWidget expression =
     let
-        comboBox : ExpressionType -> Html Expression
+        expressionTypes =
+            [ TFalse, TTrue, TAnd, TOr, TNot ]
+
         comboBox expressionType =
-            InputWidget.comboBox [] typeString (typeSelection expressionType)
-                |> Html.map (InputWidget.selected >> defaultExpression)
+            InputWidget.comboBox [] typeString expressionTypes expressionType
+                |> Html.map defaultExpressionForType
     in
         case expression of
             Constant False ->
