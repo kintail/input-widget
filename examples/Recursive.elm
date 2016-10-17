@@ -88,12 +88,12 @@ expressionWidget expression =
             And firstExpression secondExpression ->
                 Html.span []
                     [ Html.text "("
-                    , comboBox TAnd
                     , expressionWidget firstExpression
                         |> Html.map
                             (\newFirstExpression ->
                                 And newFirstExpression secondExpression
                             )
+                    , comboBox TAnd
                     , expressionWidget secondExpression
                         |> Html.map
                             (\newSecondExpression ->
@@ -105,12 +105,12 @@ expressionWidget expression =
             Or firstExpression secondExpression ->
                 Html.span []
                     [ Html.text "("
-                    , comboBox TOr
                     , expressionWidget firstExpression
                         |> Html.map
                             (\newFirstExpression ->
                                 Or newFirstExpression secondExpression
                             )
+                    , comboBox TOr
                     , expressionWidget secondExpression
                         |> Html.map
                             (\newSecondExpression ->
