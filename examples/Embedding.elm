@@ -2,7 +2,7 @@ module Embedding exposing (..)
 
 import Html exposing (Html)
 import Html.App as Html
-import Kintail.InputWidget as InputWidget exposing (InputWidget)
+import Kintail.InputWidget as InputWidget
 
 
 type Msg

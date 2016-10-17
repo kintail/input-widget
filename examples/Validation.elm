@@ -3,7 +3,7 @@ module Validation exposing (..)
 import Html exposing (Html)
 import Html.Attributes as Html
 import Html.App as Html
-import Kintail.InputWidget as InputWidget exposing (InputWidget)
+import Kintail.InputWidget as InputWidget
 
 
 type alias Person =
@@ -27,7 +27,7 @@ message { firstName, lastName } =
             "Hello " ++ firstName ++ " " ++ lastName ++ "!"
 
 
-widget : InputWidget Person
+widget : Person -> Html Person
 widget person =
     let
         { firstName, lastName } =

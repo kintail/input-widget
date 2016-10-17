@@ -1,6 +1,6 @@
 module ComboBox exposing (..)
 
-import Kintail.InputWidget as InputWidget exposing (InputWidget)
+import Kintail.InputWidget as InputWidget
 import Html exposing (Html)
 import Html.App as Html
 
@@ -11,7 +11,7 @@ type Color
     | Blue
 
 
-comboBox : InputWidget Color
+comboBox : Color -> Html Color
 comboBox =
     InputWidget.comboBox [] toString [ Red, Green, Blue ]
 

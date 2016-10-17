@@ -5,7 +5,7 @@ import Html.App as Html
 import Html.Events as Html
 import Json.Encode as Encode
 import Json.Decode as Decode
-import Kintail.InputWidget as InputWidget exposing (InputWidget)
+import Kintail.InputWidget as InputWidget
 
 
 -- Counter widget
@@ -16,7 +16,7 @@ type CounterMsg
     | Decrement
 
 
-counter : InputWidget Int
+counter : Int -> Html Int
 counter =
     let
         view count =
@@ -34,7 +34,7 @@ counter =
                 Increment ->
                     count + 1
     in
-        InputWidget.custom view update
+        InputWidget.custom { view = view, update = update }
 
 
 

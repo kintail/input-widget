@@ -3,7 +3,7 @@ module Recursive exposing (..)
 import String
 import Html exposing (Html)
 import Html.App as Html
-import Kintail.InputWidget as InputWidget exposing (InputWidget)
+import Kintail.InputWidget as InputWidget
 
 
 -- Expression type
@@ -68,7 +68,7 @@ typeString =
     toString >> String.dropLeft 1
 
 
-expressionWidget : InputWidget Expression
+expressionWidget : Expression -> Html Expression
 expressionWidget expression =
     let
         expressionTypes =

@@ -1,7 +1,6 @@
 module Kintail.InputWidget
     exposing
-        ( InputWidget
-        , checkbox
+        ( checkbox
         , radioButton
         , lineEdit
         , comboBox
@@ -20,11 +19,7 @@ import Html.App as Html
 import Basics.Extra exposing (..)
 
 
-type alias InputWidget a =
-    a -> Html a
-
-
-checkbox : List (Html.Attribute Bool) -> InputWidget Bool
+checkbox : List (Html.Attribute Bool) -> Bool -> Html Bool
 checkbox attributes value =
     Html.input
         (Html.type' "checkbox"
@@ -35,7 +30,7 @@ checkbox attributes value =
         []
 
 
-radioButton : List (Html.Attribute a) -> a -> InputWidget a
+radioButton : List (Html.Attribute a) -> a -> a -> Html a
 radioButton attributes value currentValue =
     Html.input
         (Html.type' "radio"
@@ -46,12 +41,12 @@ radioButton attributes value currentValue =
         []
 
 
-lineEdit : List (Html.Attribute String) -> InputWidget String
+lineEdit : List (Html.Attribute String) -> String -> Html String
 lineEdit attributes value =
     Html.input (Html.value value :: Html.onInput identity :: attributes) []
 
 
-comboBox : List (Html.Attribute a) -> (a -> String) -> List a -> InputWidget a
+comboBox : List (Html.Attribute a) -> (a -> String) -> List a -> a -> Html a
 comboBox attributes toStr allItems =
     let
         itemsArray =
@@ -97,7 +92,8 @@ comboBox attributes toStr allItems =
 slider :
     List (Html.Attribute Float)
     -> { min : Float, max : Float, step : Float }
-    -> InputWidget Float
+    -> Float
+    -> Html Float
 slider attributes { min, max, step } value =
     let
         valueDecoder =
@@ -116,6 +112,6 @@ slider attributes { min, max, step } value =
             []
 
 
-custom : (a -> Html msg) -> (msg -> a -> a) -> InputWidget a
-custom view update value =
+custom : { view : a -> Html msg, update : msg -> a -> a } -> a -> Html a
+custom { view, update } value =
     view value |> Html.map (\message -> update message value)

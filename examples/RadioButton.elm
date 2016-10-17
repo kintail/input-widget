@@ -3,7 +3,7 @@ module RadioButton exposing (..)
 import Html exposing (Html)
 import Html.App as Html
 import Html.Attributes as Html
-import Kintail.InputWidget as InputWidget exposing (InputWidget)
+import Kintail.InputWidget as InputWidget
 
 
 type Size

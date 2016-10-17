@@ -1,6 +1,6 @@
 module Slider exposing (..)
 
-import Kintail.InputWidget as InputWidget exposing (InputWidget)
+import Kintail.InputWidget as InputWidget
 import Html exposing (Html)
 import Html.App as Html
 
