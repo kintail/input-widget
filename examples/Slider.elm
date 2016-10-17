@@ -16,7 +16,7 @@ view value =
 main : Program Never
 main =
     Html.beginnerProgram
-        { model = 1.0
+        { model = 1.5
         , update = always
         , view = view
         }
