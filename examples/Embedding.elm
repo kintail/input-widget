@@ -23,16 +23,20 @@ update (NewValue newValue) currentModel =
 
 
 view : Model -> Html Msg
-view { value, timesChanged } =
+view model =
     let
-        labelText =
-            toString value ++ ", changed " ++ toString timesChanged ++ " times"
+        checkbox =
+            InputWidget.checkbox [] model.value |> Html.map NewValue
+
+        label =
+            Html.text
+                (toString model.value
+                    ++ ", changed "
+                    ++ toString model.timesChanged
+                    ++ " times"
+                )
     in
-        Html.div []
-            [ Html.div [] [ InputWidget.checkbox [] value ]
-                |> Html.map NewValue
-            , Html.div [] [ Html.text labelText ]
-            ]
+        Html.div [] [ checkbox, label ]
 
 
 main : Program Never
