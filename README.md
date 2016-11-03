@@ -4,10 +4,10 @@ This library attempts to make it easier to use the basic HTML input widgets:
 checkboxes, radio buttons, line edits, combo boxes, and sliders.
 
 Every function in the library accepts as input the current value to be
-displayed, and returns as output a fragment of HTML that produces messages
-containing newly entered/selected values. For example, `InputWidget.checkBox`
-accepts a list of HTML attributes and the current `Bool` value of the checkbox,
-and returns an HTML checkbox that produces a `Bool` message with the new value
+displayed, and returns as output a fragment of HTML that produces newly
+entered/selected values as messages. For example, `InputWidget.checkBox` accepts
+a list of HTML attributes and the current `Bool` value of the checkbox, and
+returns an HTML checkbox that produces a `Bool` message with the new value
 whenever the checkbox is clicked by the user.
 
 Additional arguments may be used to specify additional configuration. For
