@@ -8,6 +8,9 @@ module Kintail.InputWidget
         , custom
         )
 
+{-| Every function in this module follows the same pattern.
+-}
+
 import String
 import Array exposing (Array)
 import Json.Encode as Encode exposing (Value)
@@ -18,6 +21,12 @@ import Html.Events as Html
 import Html.App as Html
 
 
+{-| Create a `<input type="checkbox">` with the given attributes and current
+value, and which produces `Bool` messages with the new value whenever the
+checkbox is clicked.
+
+See the 'Embedding' example for sample usage.
+-}
 checkbox : List (Html.Attribute Bool) -> Bool -> Html Bool
 checkbox attributes value =
     Html.input
@@ -29,6 +38,18 @@ checkbox attributes value =
         []
 
 
+{-| Create a `<input type="radio">` with the given attributes. When the radio
+button is checked, it will send a message equal to the first given value; it
+will be displayed as currently checked if the two given values are equal to each
+other.
+
+To create a set of mutually-exclusive radio buttons (the usual case), call this
+function multiple times, passing a different first value each time (the value to
+be selected if the current radio button is clicked) but the same second value
+(the currently selected value).
+
+See the `RadioButton` example for sample usage.
+-}
 radioButton : List (Html.Attribute a) -> a -> a -> Html a
 radioButton attributes value currentValue =
     Html.input
@@ -40,6 +61,32 @@ radioButton attributes value currentValue =
         []
 
 
+{-| Create a simple `<input>` with the given attributes and current text. A
+message will be sent with the updated text whenever the text is updated. For
+example,
+
+    type Msg
+        = NewFirstName String
+        | NewLastName String
+
+    type alias Model =
+        { firstName : String
+        , lastName : String
+        }
+
+    view : model -> Html Msg
+    view =
+        Html.div []
+            [ Html.div []
+                [ InputWidget.lineEdit [] model.firstName
+                    |> Html.map NewFirstName
+                ]
+            , Html.div []
+                [ InputWidget.lineEdit [] model.lastName
+                    |> Html.map NewLastName
+                ]
+            ]
+-}
 lineEdit : List (Html.Attribute String) -> String -> Html String
 lineEdit attributes value =
     Html.input (Html.value value :: Html.onInput identity :: attributes) []
