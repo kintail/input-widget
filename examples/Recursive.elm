@@ -91,12 +91,24 @@ expressionWidget expression =
                 |> Html.map defaultExpressionForType
     in
         case expression of
+            -- The input widget for the constant false value is simply a combo
+            -- box set to 'False'.
             Constant False ->
                 comboBox TFalse
 
+            -- The input widget for the constant false value is simply a combo
+            -- box set to 'False'.
             Constant True ->
                 comboBox TTrue
 
+            -- For a negated expression, the input widget is a combo box set to
+            -- 'Not' and then another expression widget for the negated
+            -- subexpression. If the subexpression widget is edited, it will
+            -- emit a message with the new subexpression; `Html.map Not` is used
+            -- to negate that subexpression to form the updated top-level
+            -- expression. (If the combo box is edited instead, the entire top-
+            -- level expression will be wiped out and replaced by the 'dummy'
+            -- expression of the new type.)
             Not subExpression ->
                 Html.span []
                     [ Html.text "("
@@ -105,6 +117,10 @@ expressionWidget expression =
                     , Html.text ")"
                     ]
 
+            -- Editing a 'And' expression is similar to 'Not' but a bit more
+            -- complex. Note how `Html.map` is used to combine a new value for
+            -- one operand with the existing value of the other operand to
+            -- create a new top-level value.
             And firstExpression secondExpression ->
                 Html.span []
                     [ Html.text "("
@@ -122,6 +138,12 @@ expressionWidget expression =
                     , Html.text ")"
                     ]
 
+            -- 'Or' is pretty much the same as 'And'. Note that since there is
+            -- no mapping used on the combo box, editing the expression type
+            -- completely blow away the current expression and replace it with a
+            -- dummy one of the selected type; a more sophisticated
+            -- implementation might do something like retain the same left and
+            -- right hand operands if an 'Or' is switched to an 'And'.
             Or firstExpression secondExpression ->
                 Html.span []
                     [ Html.text "("
