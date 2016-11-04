@@ -85,7 +85,7 @@ expressionWidget expression =
 
         -- Helper function for creating an expression type combo box; whenever
         -- a new expression type is selected, a new dummy expression is created
-        -- that can then be further edited
+        -- that can then be further edited.
         comboBox expressionType =
             InputWidget.comboBox [] typeString expressionTypes expressionType
                 |> Html.map defaultExpressionForType
