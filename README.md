@@ -1,7 +1,11 @@
 # What is it?
 
 This library attempts to make it easier to use the basic HTML input widgets:
-checkboxes, radio buttons, line edits, combo boxes, and sliders.
+checkboxes, radio buttons, line edits, combo boxes, and sliders. This is done in
+such a way that it is easy to create your own input widgets for more complex
+types.
+
+# How do I use it?
 
 Every function in the library accepts as input the current value to be
 displayed, and returns as output a fragment of HTML that produces newly
@@ -21,5 +25,7 @@ fed back in to the `view` function. This means that the value emitted from a
 given fragment of HTML will generally become the input value used to create that
 same fragment of HTML the next time your `view` function is called.
 
-Check out the `examples` directory to see examples of using each input widget
-type, as well as how to embed them within a standard Elm app.
+# Examples
+
+Check out the `examples` directory to see examples of each input widget, how to
+define your own, and how to use them within a standard Elm app.
