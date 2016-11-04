@@ -8,7 +8,12 @@ module Kintail.InputWidget
         , custom
         )
 
-{-| Functions for creating input widgets of the general form `a -> Html a`.
+{-| Functions for creating input widgets of the general form `a -> Html a`. You
+should use `Html.map` to convert the produced messages to the message type used
+by your app, and the new value should generally be stored in your model and fed
+back in to the `view` function. This means that the value emitted from a given
+fragment of HTML will generally become the input value used to create that same
+fragment of HTML the next time your `view` function is called.
 
 @docs checkbox, radioButton, lineEdit, comboBox, slider, custom
 -}
