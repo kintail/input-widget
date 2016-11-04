@@ -70,29 +70,8 @@ radioButton attributes value currentValue =
 
 {-| Create a simple `<input>` element with the given attributes and displayed
 text. A message will be sent with the updated text whenever the text is edited.
-For example,
 
-    type Msg
-        = NewFirstName String
-        | NewLastName String
-
-    type alias Model =
-        { firstName : String
-        , lastName : String
-        }
-
-    view : model -> Html Msg
-    view =
-        Html.div []
-            [ Html.div []
-                [ InputWidget.lineEdit [] model.firstName
-                    |> Html.map NewFirstName
-                ]
-            , Html.div []
-                [ InputWidget.lineEdit [] model.lastName
-                    |> Html.map NewLastName
-                ]
-            ]
+See the `Validation.elm` example for sample usage.
 -}
 lineEdit : List (Html.Attribute String) -> String -> Html String
 lineEdit attributes value =
