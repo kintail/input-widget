@@ -12,6 +12,8 @@ type alias Person =
     }
 
 
+{-| Generate a simple validation message for given first and last names.
+-}
 message : Person -> String
 message { firstName, lastName } =
     case ( firstName, lastName ) of
@@ -28,12 +30,19 @@ message { firstName, lastName } =
             "Hello " ++ firstName ++ " " ++ lastName ++ "!"
 
 
+{-| Create a high-level input widget that displays values of type `Person` and
+produces messages with updated (edited) `Person` values.
+-}
 widget : Person -> Html Person
 widget person =
     let
         { firstName, lastName } =
             person
 
+        -- Note how `Html.map` is used: when a new first name is entered, it is
+        -- combined with the existing last name to form a new `Person` value
+        -- that can then be produced as a message (and vice versa in
+        -- `lastNameWidget` below)
         firstNameWidget =
             InputWidget.lineEdit [ Html.placeholder "First name" ] firstName
                 |> Html.map (\newFirstName -> Person newFirstName lastName)
