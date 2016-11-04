@@ -27,7 +27,7 @@ import Html.App as Html
 current value, and which produces `Bool` messages with the new value whenever
 the checkbox is clicked.
 
-See the 'Embedding' example for sample usage.
+See the `Embedding.elm` example for sample usage.
 -}
 checkbox : List (Html.Attribute Bool) -> Bool -> Html Bool
 checkbox attributes value =
@@ -50,7 +50,7 @@ function multiple times, passing a different first value each time (the value to
 be selected if the current radio button is clicked) but the same second value
 (the currently selected value).
 
-See the `RadioButton` example for sample usage.
+See the `RadioButton.elm` example for sample usage.
 -}
 radioButton : List (Html.Attribute a) -> a -> a -> Html a
 radioButton attributes value currentValue =
@@ -105,7 +105,7 @@ and the list should not contain any duplicates. Otherwise it is possible that
 either no values or more than one value will be marked as `selected` in the
 resulting HTML.
 
-See the `ComboBox` example for sample usage.
+See the `ComboBox.elm` example for sample usage.
 -}
 comboBox : List (Html.Attribute a) -> (a -> String) -> List a -> a -> Html a
 comboBox attributes toStr allItems =
@@ -154,7 +154,7 @@ comboBox attributes toStr allItems =
 value. A message will be sent with the updated value whenever the slider is
 dragged.
 
-See the `Slider` example for sample usage.
+See the `Slider.elm` example for sample usage.
 -}
 slider :
     List (Html.Attribute Float)
@@ -193,7 +193,7 @@ that type and the current value, and return an updated value. When called as
 this function will then return a function in the standard form `a -> Html a`
 that effectively 'hides' the chosen message type.
 
-See the `Custom` example for a usage example.
+See the `Custom.elm` example for a usage example.
 -}
 custom : { view : a -> Html msg, update : msg -> a -> a } -> a -> Html a
 custom { view, update } value =
