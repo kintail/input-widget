@@ -8,9 +8,6 @@ module Kintail.InputWidget
         , custom
         )
 
-{-| Every function in this module follows the same pattern.
--}
-
 import String
 import Array exposing (Array)
 import Json.Encode as Encode exposing (Value)
