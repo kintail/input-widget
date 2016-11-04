@@ -44,6 +44,10 @@ type ExpressionType
     | TNot
 
 
+{-| Create a 'default'/'dummy' expression of the given type. For example, if
+'Or' is selected in a combo box, generate a new dummy expression
+'False Or False' that can then be edited further.
+-}
 defaultExpressionForType : ExpressionType -> Expression
 defaultExpressionForType expressionType =
     case expressionType of
@@ -63,17 +67,25 @@ defaultExpressionForType expressionType =
             Not (Constant False)
 
 
+{-| Convert an `ExpressionType` to a string by using the default `toString` and
+simply dropping the leading 'T'.
+-}
 typeString : ExpressionType -> String
 typeString =
     toString >> String.dropLeft 1
 
 
+{-| Recursively create HTML for editing a given Boolean expression.
+-}
 expressionWidget : Expression -> Html Expression
 expressionWidget expression =
     let
         expressionTypes =
             [ TFalse, TTrue, TAnd, TOr, TNot ]
 
+        -- Helper function for creating an expression type combo box; whenever
+        -- a new expression type is selected, a new dummy expression is created
+        -- that can then be further edited
         comboBox expressionType =
             InputWidget.comboBox [] typeString expressionTypes expressionType
                 |> Html.map defaultExpressionForType
