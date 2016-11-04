@@ -145,6 +145,12 @@ comboBox attributes toStr allItems =
         )
 
 
+{-| Create a `<range>` element with the given bounds, step size and current
+value. A message will be sent with the updated value whenever the slider is
+dragged.
+
+See the `Slider` example for sample usage.
+-}
 slider :
     List (Html.Attribute Float)
     -> { min : Float, max : Float, step : Float }
