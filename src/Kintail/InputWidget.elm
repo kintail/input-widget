@@ -68,8 +68,9 @@ radioButton attributes value currentValue =
         []
 
 
-{-| Create a simple `<input>` element with the given attributes and displayed
-text. A message will be sent with the updated text whenever the text is edited.
+{-| Create a simple `<input>` element with the given attributes and text to
+display. A message will be sent with the updated text whenever the text is
+edited.
 
 See the `Validation.elm` example for sample usage.
 -}
