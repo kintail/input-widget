@@ -150,9 +150,9 @@ comboBox attributes toStr allItems =
         )
 
 
-{-| Create a `<range>` element with the given bounds, step size and current
-value. A message will be sent with the updated value whenever the slider is
-dragged.
+{-| Create a `<range>` element with the given attributes, bounds, step size and
+current value. A message will be sent with the updated value whenever the slider
+is dragged.
 
 See the `Slider.elm` example for sample usage.
 -}
