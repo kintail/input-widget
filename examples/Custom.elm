@@ -58,8 +58,8 @@ type Msg
 view : Model -> Html Msg
 view { firstValue, secondValue } =
     Html.div []
-        [ Html.div [] [ counter firstValue ] |> Html.map NewFirstValue
-        , Html.div [] [ counter secondValue ] |> Html.map NewSecondValue
+        [ Html.div [] [ counter firstValue |> Html.map NewFirstValue ]
+        , Html.div [] [ counter secondValue |> Html.map NewSecondValue ]
         , Html.text (toString (firstValue + secondValue))
         ]
 
