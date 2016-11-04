@@ -85,6 +85,14 @@ expressionWidget expression =
             Constant True ->
                 comboBox TTrue
 
+            Not subExpression ->
+                Html.span []
+                    [ Html.text "("
+                    , comboBox TNot
+                    , expressionWidget subExpression |> Html.map Not
+                    , Html.text ")"
+                    ]
+
             And firstExpression secondExpression ->
                 Html.span []
                     [ Html.text "("
@@ -116,14 +124,6 @@ expressionWidget expression =
                             (\newSecondExpression ->
                                 Or firstExpression newSecondExpression
                             )
-                    , Html.text ")"
-                    ]
-
-            Not subExpression ->
-                Html.span []
-                    [ Html.text "("
-                    , comboBox TNot
-                    , expressionWidget subExpression |> Html.map Not
                     , Html.text ")"
                     ]
 
