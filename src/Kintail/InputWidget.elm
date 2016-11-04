@@ -21,9 +21,9 @@ import Html.Events as Html
 import Html.App as Html
 
 
-{-| Create a `<input type="checkbox">` with the given attributes and current
-value, and which produces `Bool` messages with the new value whenever the
-checkbox is clicked.
+{-| Create a `<input type="checkbox">` element with the given attributes and
+current value, and which produces `Bool` messages with the new value whenever
+the checkbox is clicked.
 
 See the 'Embedding' example for sample usage.
 -}
@@ -38,10 +38,10 @@ checkbox attributes value =
         []
 
 
-{-| Create a `<input type="radio">` with the given attributes. When the radio
-button is checked, it will send a message equal to the first given value; it
-will be displayed as currently checked if the two given values are equal to each
-other.
+{-| Create a `<input type="radio">` element with the given attributes. When the
+radio button is checked, it will send a message equal to the first given value;
+it will be displayed as currently checked if the two given values are equal to
+each other.
 
 To create a set of mutually-exclusive radio buttons (the usual case), call this
 function multiple times, passing a different first value each time (the value to
@@ -61,9 +61,9 @@ radioButton attributes value currentValue =
         []
 
 
-{-| Create a simple `<input>` with the given attributes and current text. A
-message will be sent with the updated text whenever the text is updated. For
-example,
+{-| Create a simple `<input>` element with the given attributes and displayed
+text. A message will be sent with the updated text whenever the text is edited.
+For example,
 
     type Msg
         = NewFirstName String
@@ -92,11 +92,11 @@ lineEdit attributes value =
     Html.input (Html.value value :: Html.onInput identity :: attributes) []
 
 
-{-| Create a `<select>` item with the given attributes. The `<select>` item will
-be populated by `<option>` items defined by the given list of values, converted
-to text using the given function. The final given value is the one that should
-be displayed as selected. A message will be sent with the newly selected value
-whenever the selection is changed, either via keyboard or click.
+{-| Create a `<select>` element with the given attributes. The `<select>`
+element will be populated by `<option>` elements defined by the given list of
+values, converted to text using the given function. The final given value is the
+one that should be displayed as selected. A message will be sent with the newly
+selected value whenever the selection is changed, either via keyboard or click.
 
 Note that the currently selected value should be one of the values in the list,
 and the list should not contain any duplicates. Otherwise it is possible that
