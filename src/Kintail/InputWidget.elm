@@ -53,7 +53,10 @@ each other.
 To create a set of mutually-exclusive radio buttons (the usual case), call this
 function multiple times, passing a different first value each time (the value to
 be selected if that radio button is clicked) but the same second value (the
-currently selected value).
+currently selected value). This way, only the radio button whose value matches
+the currently selected value will be displayed as checked. When any other radio
+button is clicked, it will emit a message equal to its specific value, so that
+you can update the currently selected value to that value.
 
 See the `RadioButton.elm` example for sample usage.
 -}
