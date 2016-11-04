@@ -10,7 +10,7 @@ looks something like
 
 view : Value -> Html Value
 view currentValue =
-    ...
+    Html.div ...
 
 main =
     Html.App.beginnerProgram
