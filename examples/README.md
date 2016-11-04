@@ -34,3 +34,5 @@ of creating functions of type `a -> Html a` by making clever use of `Html.map`.
 
 Finally, the `Recursive` example shows how you might build input widgets for
 recursive data types (in this case, arbitrarily-nested boolean expressions).
+This is by far the most complex example but uses the same `Html.map` technique
+as the `Validation` example.
