@@ -193,7 +193,7 @@ that type and the current value, and return an updated value. When called as
 this function will then return a function in the standard form `a -> Html a`
 that effectively 'hides' the chosen message type.
 
-See the `Custom.elm` example for a usage example.
+See the `Custom.elm` example for sample usage.
 -}
 custom : { view : a -> Html msg, update : msg -> a -> a } -> a -> Html a
 custom { view, update } value =
