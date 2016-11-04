@@ -92,6 +92,19 @@ lineEdit attributes value =
     Html.input (Html.value value :: Html.onInput identity :: attributes) []
 
 
+{-| Create a `<select>` item with the given attributes. The `<select>` item will
+be populated by `<option>` items defined by the given list of values, converted
+to text using the given function. The final given value is the one that should
+be displayed as selected. A message will be sent with the newly selected value
+whenever the selection is changed, either via keyboard or click.
+
+Note that the currently selected value should be one of the values in the list,
+and the list should not contain any duplicates. Otherwise it is possible that
+either no values or more than one value will be marked as `selected` in the
+resulting HTML.
+
+See the `ComboBox` example for sample usage.
+-}
 comboBox : List (Html.Attribute a) -> (a -> String) -> List a -> a -> Html a
 comboBox attributes toStr allItems =
     let
