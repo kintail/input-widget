@@ -27,10 +27,10 @@ The `Embedding` example shows how to use input widgets within a more standard
 Elm app that has a more complex model, a tagged union message type, and an
 explicit `update` function.
 
-The `Custom` example shows how to define your own input widgets that follow the
-`a -> Html a` pattern by using a restricted form of the Elm Architecture and the
-`InputWidget.custom` function. The `Validation` example shows an alternate way
-of creating functions of type `a -> Html a` by making clever use of `Html.map`.
+The `Custom` example shows how to define your own input widgets by using a
+restricted form of the Elm Architecture and the `InputWidget.custom` function.
+The `Validation` example shows an alternate way of creating functions of type
+`a -> Html a` by making clever use of `Html.map`.
 
 Finally, the `Recursive` example shows how you might build input widgets for
 recursive data types (in this case, arbitrarily-nested boolean expressions).
