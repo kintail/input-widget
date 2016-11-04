@@ -8,6 +8,11 @@ module Kintail.InputWidget
         , custom
         )
 
+{-| Functions for creating input widgets of the general form `a -> Html a`.
+
+@docs checkbox, radioButton, lineEdit, comboBox, slider, custom
+-}
+
 import String
 import Array exposing (Array)
 import Json.Encode as Encode exposing (Value)
