@@ -16,6 +16,9 @@ type CounterMsg
     | Decrement
 
 
+{-| Create a custom counter widget that displays a count along with buttons to
+increment or decrement it.
+-}
 counter : Int -> Html Int
 counter =
     let
