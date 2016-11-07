@@ -167,9 +167,8 @@ slider attributes { min, max, step } value =
             []
 
 
-{-| Create a custom input widget using a restricted form of the Elm Architecture
-where the only allowed model is the current value to display (but any message
-type is allowed).
+{-| Create a custom input widget from `view` and `update` functions of the same
+form as used in standard Elm Architecture programs.
 
 The `view` function should accept as input the current value to display, and
 produce a fragment of HTML displaying that value that produces messages of some
@@ -179,7 +178,8 @@ that type and the current value, and return an updated value. When called as
     InputWidget.custom { view = view, update = update }
 
 this function will then return a function in the standard form `a -> Html a`
-that effectively 'hides' the chosen message type.
+that accepts the value to display and will send a message with the updated value
+whenever it is edited.
 
 See the `Custom.elm` example for sample usage.
 -}
