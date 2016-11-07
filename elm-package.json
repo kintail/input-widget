@@ -1,6 +1,6 @@
 {
     "version": "1.0.0",
-    "summary": "Easier-to-use basic HTML input widgets",
+    "summary": "Simpler and easier basic HTML input widgets",
     "repository": "https://github.com/kintail/input-widget.git",
     "license": "MPL-2.0",
     "source-directories": [
