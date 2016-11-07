@@ -12,6 +12,8 @@ type Size
     | Large
 
 
+{-| Convert a `Size` value to a string that can be used as the CSS `font-size`.
+-}
 fontSize : Size -> String
 fontSize size =
     case size of
@@ -25,6 +27,8 @@ fontSize size =
             "3em"
 
 
+{-| Helper function to construct a radio button with its associated label.
+-}
 radioButton : Size -> Size -> Html Size
 radioButton size currentSize =
     Html.div []
