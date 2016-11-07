@@ -184,5 +184,5 @@ whenever it is edited.
 See the `Custom.elm` example for sample usage.
 -}
 custom : { view : a -> Html msg, update : msg -> a -> a } -> a -> Html a
-custom { view, update } value =
-    view value |> Html.map (\message -> update message value)
+custom { view, update } =
+    \value -> view value |> Html.map (\message -> update message value)
