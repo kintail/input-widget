@@ -17,11 +17,15 @@ type CounterMsg
 
 
 {-| Create a custom counter widget that displays a count along with buttons to
-increment or decrement it.
+increment or decrement it. Note that although `Increment` and `Decrement`
+messages are used internally by `update` and `view`, from the outside the only
+message produced by the widget is simply 'new value' of type `Int`.
 -}
 counter : Int -> Html Int
 counter =
     let
+        -- Standard Elm Architecture view function
+        view : Int -> Html CounterMsg
         view count =
             Html.span []
                 [ Html.button [ Html.onClick Decrement ] [ Html.text "-" ]
@@ -29,6 +33,8 @@ counter =
                 , Html.button [ Html.onClick Increment ] [ Html.text "+" ]
                 ]
 
+        -- Standard Elm Architecture update function
+        update : CounterMsg -> Int -> Int
         update msg count =
             case msg of
                 Decrement ->
@@ -41,7 +47,7 @@ counter =
 
 
 
--- Application
+-- Sample application: two independent counters
 
 
 type alias Model =
@@ -55,6 +61,9 @@ type Msg
     | NewSecondValue Int
 
 
+{-| Render the two counters, tagging the updated values produced by each one
+with a different message type, and display the sum of the two values
+-}
 view : Model -> Html Msg
 view { firstValue, secondValue } =
     Html.div []
@@ -64,6 +73,8 @@ view { firstValue, secondValue } =
         ]
 
 
+{-| Respond to new values produced by each counter by storing them in the model
+-}
 update : Msg -> Model -> Model
 update msg model =
     case msg of
