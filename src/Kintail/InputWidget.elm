@@ -177,9 +177,10 @@ that type and the current value, and return an updated value. When called as
 
     InputWidget.custom { view = view, update = update }
 
-this function will then return a function in the standard form `a -> Html a`
-that accepts the value to display and will send a message with the updated value
-whenever it is edited.
+this function will then return a function in the standard form `a -> Html a`.
+Note that regardless of the message type used internally by `view` and `update`,
+the only messages produced by the returned view function will be 'new value'
+messages of type `a`.
 
 See the `Custom.elm` example for sample usage.
 -}
