@@ -15,7 +15,11 @@ back in to the `view` function. This means that the value emitted from a given
 fragment of HTML will generally become the input value used to create that same
 fragment of HTML the next time your `view` function is called.
 
-@docs checkbox, radioButton, lineEdit, comboBox, slider, custom
+@docs checkbox, radioButton, lineEdit, comboBox, slider
+
+## Advanced
+
+@docs custom
 -}
 
 import String
