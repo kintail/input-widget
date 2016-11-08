@@ -97,8 +97,8 @@ expressionWidget expression =
             Constant False ->
                 comboBox TFalse
 
-            -- The input widget for the constant false value is simply a combo
-            -- box set to 'False'.
+            -- The input widget for the constant true value is simply a combo
+            -- box set to 'True'.
             Constant True ->
                 comboBox TTrue
 
