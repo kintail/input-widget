@@ -11,14 +11,13 @@ type Color
     | Blue
 
 
-comboBox : Color -> Html Color
-comboBox =
-    InputWidget.comboBox [] toString [ Red, Green, Blue ]
-
-
 view : Color -> Html Color
-view color =
-    Html.div [] [ comboBox color, Html.text (toString color) ]
+view currentColor =
+    let
+        comboBox =
+            InputWidget.comboBox [] toString [ Red, Green, Blue ] currentColor
+    in
+        Html.div [] [ comboBox, Html.text (toString currentColor) ]
 
 
 main : Program Never
