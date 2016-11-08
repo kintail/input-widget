@@ -6,7 +6,7 @@ import Html.App as Html
 import Kintail.InputWidget as InputWidget
 
 
--- Expression type
+-- Expression type ('business logic', not tied to the UI)
 
 
 type Expression
@@ -45,7 +45,7 @@ type ExpressionType
 
 
 {-| Create a 'default'/'dummy' expression of the given type. For example, if
-'Or' is selected in a combo box, generate a new dummy expression
+'Or' is selected in a combo box, this is used to generate a new dummy expression
 'False Or False' that can then be edited further.
 -}
 defaultExpressionForType : ExpressionType -> Expression
@@ -68,7 +68,7 @@ defaultExpressionForType expressionType =
 
 
 {-| Convert an `ExpressionType` to a string by using the default `toString` and
-simply dropping the leading 'T'.
+then dropping the leading 'T'.
 -}
 typeString : ExpressionType -> String
 typeString =
@@ -80,10 +80,11 @@ typeString =
 expressionWidget : Expression -> Html Expression
 expressionWidget expression =
     let
+        -- List of expression types to display in combo boxes.
         expressionTypes =
             [ TFalse, TTrue, TAnd, TOr, TNot ]
 
-        -- Helper function for creating an expression type combo box; whenever
+        -- Helper function for creating an expression type combo box: whenever
         -- a new expression type is selected, a new dummy expression is created
         -- that can then be further edited.
         comboBox expressionType =
@@ -105,10 +106,10 @@ expressionWidget expression =
             -- 'Not' and then another expression widget for the negated
             -- subexpression. If the subexpression widget is edited, it will
             -- emit a message with the new subexpression; `Html.map Not` is used
-            -- to negate that subexpression to form the updated top-level
-            -- expression. (If the combo box is edited instead, the entire top-
-            -- level expression will be wiped out and replaced by the 'dummy'
-            -- expression of the new type.)
+            -- to negate that subexpression to form the updated top-level `Not`
+            -- expression. (If the combo box is edited instead, the entire
+            -- top-level expression will be wiped out and replaced by a 'dummy'
+            -- expression of the newly selected type.)
             Not subExpression ->
                 Html.span []
                     [ Html.text "("
@@ -117,10 +118,10 @@ expressionWidget expression =
                     , Html.text ")"
                     ]
 
-            -- Editing a 'And' expression is similar to 'Not' but a bit more
+            -- Editing an 'And' expression is similar to 'Not' but a bit more
             -- complex. Note how `Html.map` is used to combine a new value for
             -- one operand with the existing value of the other operand to
-            -- create a new top-level value.
+            -- create a new top-level `And` expression.
             And firstExpression secondExpression ->
                 Html.span []
                     [ Html.text "("
@@ -140,8 +141,8 @@ expressionWidget expression =
 
             -- 'Or' is pretty much the same as 'And'. Note that since there is
             -- no mapping used on the combo box, editing the expression type
-            -- completely blow away the current expression and replace it with a
-            -- dummy one of the selected type; a more sophisticated
+            -- completely blows away the current expression and replaces it with
+            -- a new dummy one of the selected type; a more sophisticated
             -- implementation might do something like retain the same left and
             -- right hand operands if an 'Or' is switched to an 'And'.
             Or firstExpression secondExpression ->
@@ -166,6 +167,9 @@ expressionWidget expression =
 -- Program
 
 
+{-| Show the current expression as well as that expression evaluated to a
+Boolean value.
+-}
 view : Expression -> Html Expression
 view expression =
     Html.div []
