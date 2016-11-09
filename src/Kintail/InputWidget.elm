@@ -36,7 +36,7 @@ import Html.App as Html
 current value, and which produces `Bool` messages with the new value whenever
 the checkbox is clicked.
 
-See the [Embedding.elm](https://github.com/kintail/input-widget/blob/1.0.0/examples/Embedding.elm)
+See the [Embedding.elm](https://github.com/kintail/input-widget/blob/1.0.1/examples/Embedding.elm)
 example for sample usage.
 -}
 checkbox : List (Html.Attribute Bool) -> Bool -> Html Bool
@@ -63,7 +63,7 @@ the currently selected value will be displayed as checked. When any other radio
 button is clicked, it will emit a message equal to its specific value, so that
 you can update the currently selected value to that value.
 
-See the [RadioButton.elm](https://github.com/kintail/input-widget/blob/1.0.0/examples/RadioButton.elm)
+See the [RadioButton.elm](https://github.com/kintail/input-widget/blob/1.0.1/examples/RadioButton.elm)
 example for sample usage.
 -}
 radioButton : List (Html.Attribute a) -> a -> a -> Html a
@@ -81,7 +81,7 @@ radioButton attributes value currentValue =
 display. A message will be sent with the updated text whenever the text is
 edited.
 
-See the [Validation.elm](https://github.com/kintail/input-widget/blob/1.0.0/examples/Validation.elm)
+See the [Validation.elm](https://github.com/kintail/input-widget/blob/1.0.1/examples/Validation.elm)
 example for sample usage.
 -}
 lineEdit : List (Html.Attribute String) -> String -> Html String
@@ -100,7 +100,7 @@ and the list should not contain any duplicates. Otherwise it is possible that
 either no values or more than one value will be marked as `selected` in the
 resulting HTML.
 
-See the [ComboBox.elm](https://github.com/kintail/input-widget/blob/1.0.0/examples/ComboBox.elm)
+See the [ComboBox.elm](https://github.com/kintail/input-widget/blob/1.0.1/examples/ComboBox.elm)
 example for sample usage.
 -}
 comboBox : List (Html.Attribute a) -> (a -> String) -> List a -> a -> Html a
@@ -150,7 +150,7 @@ comboBox attributes toStr allItems =
 current value. A message will be sent with the updated value whenever the slider
 is dragged.
 
-See the [Slider.elm](https://github.com/kintail/input-widget/blob/1.0.0/examples/Slider.elm)
+See the [Slider.elm](https://github.com/kintail/input-widget/blob/1.0.1/examples/Slider.elm)
 example for sample usage.
 -}
 slider :
@@ -191,7 +191,7 @@ Note that regardless of the message type used internally by `view` and `update`,
 the only messages produced by the returned view function will be 'new value'
 messages of type `a`.
 
-See the [Custom.elm](https://github.com/kintail/input-widget/blob/1.0.0/examples/Custom.elm)
+See the [Custom.elm](https://github.com/kintail/input-widget/blob/1.0.1/examples/Custom.elm)
 example for sample usage.
 -}
 custom : { view : a -> Html msg, update : msg -> a -> a } -> a -> Html a
