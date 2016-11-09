@@ -53,6 +53,6 @@ to display.
 
 # Examples
 
-Check out the [examples](https://github.com/kintail/input-widget/tree/1.0.1/examples)
+Check out the [examples](https://github.com/kintail/input-widget/tree/1.0.2/examples)
 directory to see examples of each input widget, how to define your own, and how
 to use them within a standard Elm app.
