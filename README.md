@@ -37,6 +37,20 @@ value to display, and listen for updated values.
 
 # How do I use it?
 
+To install, run
+
+```
+elm package install kintail/input-widget
+```
+
+or add
+
+```json
+"kintail/input-widget": "1.0.0 <= v < 2.0.0"
+```
+
+to your `elm-package.json`.
+
 Every function in the library accepts as input the current value to be
 displayed, and returns as output a fragment of HTML that produces newly
 entered/selected values as messages. For example, `InputWidget.checkBox` accepts
