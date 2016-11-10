@@ -64,8 +64,9 @@ generated HTML.
 
 # Examples
 
-Let's walk through a complete example app using a couple functions from this
-package. Start with some module imports:
+Let's walk through a complete example app to prompt someone for their title,
+first and last names using functions from this package and display a customized
+greeting. Start with some module imports:
 
 ```elm
 module ReadmeExample exposing (..)
