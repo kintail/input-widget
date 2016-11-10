@@ -5,13 +5,13 @@ This package is primarily two things:
   - A more convenient way to use `<input>`, `<select>` and `<range>` elements in
     your `view` functions without having to remember the exact combinations of
     attributes and event handlers to use. I personally often forget whether it's
-    `value` or `checked` I should set on a check box, or whether it's the
+    `value` or `checked` I should set on a checkbox, or whether it's the
     `onInput` or `onCheck` event I should be handling. For more complex elements
     like `<select>`, custom event handlers are required. This package handles
     those annoying details for you.
   - An experiment in developing a common pattern for working with input widgets.
     All functions in this library follow the general pattern `a -> Html a`; for
-    example, the `checkBox` function has the signature
+    example, the `checkbox` function has the signature
     `List (Html.Attribute Bool) -> Bool -> Html Bool`, meaning that in addition
     to a list of extra HTML attributes to apply to the resulting element, it
     accepts the current `Bool` value to display (`True` for checked, `False` for
