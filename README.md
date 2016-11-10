@@ -1,39 +1,28 @@
 # What is it?
 
-When I first started working on small Elm apps I found it a bit annoying (having
-very little experience with HTML) to have to remember the various combinations
-of HTML attributes needed to build up basic input widgets. For example, a simple
-checkbox view function might look like:
+This package is primarily two things:
 
-```elm
-import Html
-import Html.Attributes
-
-type Msg
-    = NewValue Bool
-
-checkbox : Bool -> Html Msg
-checkbox currentValue =
-    Html.input
-        [ Html.Attributes.type' "checkbox"
-        , Html.Attributes.checked currentValue
-        , Html.Attributes.onCheck NewValue
-        ]
-        []
-```
-
-This is a bit verbose, involves the kind of ugly and "stringly typed" `type'`
-attribute, and I personally often forget whether it's supposed to be `checked`
-or `value`, or `onCheck` or `onInput`. It's tempting to leave off the `checked`
-attribute entirely and just listen for new values using `onCheck`, but this
-means you have no way to initialize the checkbox to a particular value and
-raises the possibility of a mismatch between your model and the view.
-
-This library consists of a set of view functions that make it easier to use the
-basic HTML input widgets: checkboxes, radio buttons, line edits, combo boxes,
-and sliders. The main goals are to avoid having to remember a bunch of
-attributes, and be able to follow a consistent pattern: provide the current
-value to display, and listen for updated values.
+  - A more convenient way to use `<input>`, `<select>` and `<range>` elements in
+    your `view` functions without having to remember the exact combinations of
+    attributes and event handlers to use. I personally often forget whether it's
+    `value` or `checked` I should set on a check box, or whether it's the
+    `onInput` or `onCheck` event I should be handling. For more complex elements
+    like `<select>`, custom event handlers are required. This package handles
+    those annoying details for you.
+  - An experiment in developing a common pattern for working with input widgets.
+    All functions in this library follow the general pattern `a -> Html a`; for
+    example, the `checkBox` function has the signature
+    `List (Html.Attribute Bool) -> Bool -> Html Bool`, meaning that in addition
+    to a list of extra HTML attributes to apply to the resulting element, it
+    accepts the current `Bool` value to display (`True` for checked, `False` for
+    unchecked) and produces a message with the new `Bool` value whenever the
+    checkbox is clicked. Similarly, a `lineEdit` takes a `String` to display and
+    produces a new `String` as a message whenever that text is edited. This
+    generally enforces good practice (since you always have to explicitly
+    supply the current value to display in an input widget, it's much harder to
+    get a mismatch between your model and your view) but it turns out that it
+    also makes it easy to create cool things like
+    [input widgets for recursive data types](https://github.com/kintail/input-widget/blob/1.0.3/examples/Recursive.elm).
 
 # How do I use it?
 
@@ -51,16 +40,8 @@ or add
 
 to your `elm-package.json`.
 
-Every function in the library accepts as input the current value to be
-displayed, and returns as output a fragment of HTML that produces newly
-entered/selected values as messages. For example, `InputWidget.checkBox` accepts
-a list of HTML attributes and the current `Bool` value of the checkbox, and
-returns an HTML checkbox that produces a `Bool` message with the new value
-whenever the checkbox is clicked by the user.
-
-Additional arguments may be used to specify additional configuration - at a
-minimum, every function accepts a list of additional attributes to apply to the
-generated HTML.
+Check out the [package documentation](http://package.elm-lang.org/packages/kintail/input-widget/latest)
+for usage details.
 
 # Examples
 
@@ -141,12 +122,15 @@ view model =
         ]
 ```
 
-`InputWidget.lineEdit` takes a `String` value to display and produces a new
-`String` message whenever the text is edited. `InputWidget.comboBox` takes a
-list of values to populate a combo box with, as well as the value to display as
-currently selected, and produces a message with the newly-selected value
-whenever the selection changes. Note how `Html.map` is used to convert (tag) the
-'new value' messages produced by each widget into a proper `Msg` value.
+As mentioned above, `InputWidget.lineEdit` takes a `String` value to display and
+produces a new `String` message whenever the text is edited.
+`InputWidget.comboBox` takes a list of values to populate a combo box with, as
+well as the value to display as currently selected, and produces a message with
+the newly-selected value whenever the selection changes. (You also have to pass
+a function to turn those values into strings to display; in many cases, such as
+here, you can simply use Elm's built-in `toString` function.) Note how
+`Html.map` is used to convert (tag) the 'new value' messages produced by each
+widget into a proper `Msg` union type value.
 
 Finally, wrap everything up with `beginnerProgram`:
 
