@@ -60,10 +60,7 @@ whenever the checkbox is clicked by the user.
 
 Additional arguments may be used to specify additional configuration - at a
 minimum, every function accepts a list of additional attributes to apply to the
-generated HTML. For example, `InputWidget.comboBox` accepts a list of HTML
-attributes, a list of possible values to choose from and a function for
-converting those values to strings, in addition to the currently selected value
-to display.
+generated HTML.
 
 # Examples
 
