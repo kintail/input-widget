@@ -67,8 +67,8 @@ to display.
 
 # Examples
 
-Let's walk through a complete example using a couple functions from this
-package, starting with some module imports:
+Let's walk through a complete example app using a couple functions from this
+package. Start with some module imports:
 
 ```elm
 module ReadmeExample exposing (..)
