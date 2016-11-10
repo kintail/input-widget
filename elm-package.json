@@ -1,6 +1,6 @@
 {
     "version": "1.0.3",
-    "summary": "Simpler and easier basic HTML input widgets",
+    "summary": "Unified shorthand for <input>, <select> and <range> elements",
     "repository": "https://github.com/kintail/input-widget.git",
     "license": "MPL-2.0",
     "source-directories": [
