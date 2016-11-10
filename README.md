@@ -104,11 +104,7 @@ update message model =
             { model | lastName = newLastName }
 ```
 
-The interesting code is all in `view`. `InputWidget.lineEdit` takes a `String`
-value to display and produces a new `String` message whenever the text is
-edited. `InputWidget.comboBox` takes a list of values to populate a combo box
-with, as well as the value to display as currently selected, and produces a
-message with the newly-selected value whenever the selection changes.
+The interesting code is all in `view`:
 
 ```elm
 view : Model -> Html Msg
@@ -133,8 +129,12 @@ view model =
         ]
 ```
 
-Note how `Html.map` is used to convert (tag) the 'new value' messages produced
-by each widget into a proper `Msg` value.
+`InputWidget.lineEdit` takes a `String` value to display and produces a new
+`String` message whenever the text is edited. `InputWidget.comboBox` takes a
+list of values to populate a combo box with, as well as the value to display as
+currently selected, and produces a message with the newly-selected value
+whenever the selection changes. Note how `Html.map` is used to convert (tag) the
+'new value' messages produced by each widget into a proper `Msg` value.
 
 Finally, wrap everything up with `beginnerProgram`:
 
