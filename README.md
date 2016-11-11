@@ -46,8 +46,8 @@ for usage details.
 # Examples
 
 Let's walk through a complete example app to prompt someone for their title,
-first and last names using functions from this package and display a customized
-greeting. Start with some module imports:
+first and last names using functions from this package, and then display a
+customized greeting. Start with some module imports:
 
 ```elm
 module ReadmeExample exposing (..)
