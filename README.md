@@ -130,7 +130,7 @@ the newly-selected value whenever the selection changes. (You also have to pass
 a function to turn those values into strings to display; in many cases, such as
 here, you can simply use Elm's built-in `toString` function.) Note how
 `Html.map` is used to convert (tag) the 'new value' messages produced by each
-widget into a proper `Msg` union type value.
+widget into proper `Msg` union type values.
 
 Finally, wrap everything up with `beginnerProgram`:
 
