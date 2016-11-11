@@ -40,7 +40,7 @@ or add
 
 to your `elm-package.json`.
 
-Check out the [package documentation](http://package.elm-lang.org/packages/kintail/input-widget/latest)
+Check out the [module documentation](http://package.elm-lang.org/packages/kintail/input-widget/latest/Kintail-InputWidget)
 for usage details.
 
 # Examples
