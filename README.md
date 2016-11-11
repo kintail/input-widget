@@ -20,8 +20,8 @@ This package is primarily two things:
     produces a new `String` as a message whenever that text is edited. This
     generally enforces good practice (since you always have to explicitly
     supply the current value to display in an input widget, it's much harder to
-    get a mismatch between your model and your view) but it turns out that it
-    also makes it easy to create cool things like
+    get a mismatch between your model and your view) but it turns out that
+    following this pattern also makes it easy to create cool things like
     [input widgets for recursive data types](https://github.com/kintail/input-widget/blob/1.0.3/examples/Recursive.elm).
 
 # How do I use it?
