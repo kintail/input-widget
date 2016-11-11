@@ -147,4 +147,6 @@ main =
 Check out the [examples](https://github.com/kintail/input-widget/tree/1.0.3/examples)
 directory to see the above example in full as well as more examples of how to
 use each input widget, how to define your own, and how to use them within a
-standard Elm app.
+standard Elm app. If you clone this repository, you should be able to run all of
+the examples by running [elm-reactor](https://github.com/elm-lang/elm-reactor)
+in the `examples` directory.
