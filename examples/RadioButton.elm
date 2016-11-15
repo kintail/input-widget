@@ -1,8 +1,7 @@
 module RadioButton exposing (..)
 
 import Html exposing (Html)
-import Html.App as Html
-import Html.Attributes as Html
+import Html.Attributes as Attributes
 import Kintail.InputWidget as InputWidget
 
 
@@ -43,12 +42,12 @@ view currentSize =
         [ radioButton Small currentSize
         , radioButton Medium currentSize
         , radioButton Large currentSize
-        , Html.div [ Html.style [ ( "font-size", fontSize currentSize ) ] ]
+        , Html.div [ Attributes.style [ ( "font-size", fontSize currentSize ) ] ]
             [ Html.text "The quick brown fox..." ]
         ]
 
 
-main : Program Never
+main : Program Never Size Size
 main =
     Html.beginnerProgram
         { model = Small

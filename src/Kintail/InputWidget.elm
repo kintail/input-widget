@@ -27,9 +27,8 @@ import Array exposing (Array)
 import Json.Encode as Encode exposing (Value)
 import Json.Decode as Decode exposing (Decoder)
 import Html exposing (Html)
-import Html.Attributes as Html
-import Html.Events as Html
-import Html.App as Html
+import Html.Attributes as Attributes
+import Html.Events as Events
 
 
 {-| Create a `<input type="checkbox">` element with the given attributes and
@@ -42,9 +41,9 @@ example for sample usage.
 checkbox : List (Html.Attribute Bool) -> Bool -> Html Bool
 checkbox attributes value =
     Html.input
-        (Html.type' "checkbox"
-            :: Html.checked value
-            :: Html.onCheck identity
+        (Attributes.type_ "checkbox"
+            :: Attributes.checked value
+            :: Events.onCheck identity
             :: attributes
         )
         []
@@ -69,9 +68,9 @@ example for sample usage.
 radioButton : List (Html.Attribute a) -> a -> a -> Html a
 radioButton attributes value currentValue =
     Html.input
-        (Html.type' "radio"
-            :: Html.checked (value == currentValue)
-            :: Html.onCheck (always value)
+        (Attributes.type_ "radio"
+            :: Attributes.checked (value == currentValue)
+            :: Events.onCheck (always value)
             :: attributes
         )
         []
@@ -86,7 +85,12 @@ example for sample usage.
 -}
 lineEdit : List (Html.Attribute String) -> String -> Html String
 lineEdit attributes value =
-    Html.input (Html.value value :: Html.onInput identity :: attributes) []
+    Html.input
+        (Attributes.value value
+            :: Events.onInput identity
+            :: attributes
+        )
+        []
 
 
 {-| Create a `<select>` element with the given attributes. The `<select>`
@@ -113,18 +117,19 @@ comboBox attributes toStr allItems =
             Decode.at [ "target", "selectedIndex" ] Decode.int
 
         newSelectionDecoder currentItem =
-            Decode.customDecoder selectedIndexDecoder
-                (\selectedIndex ->
-                    case Array.get selectedIndex itemsArray of
-                        Just newItem ->
-                            if newItem /= currentItem then
-                                Ok newItem
-                            else
-                                Err "selected item did not change"
+            selectedIndexDecoder
+                |> Decode.andThen
+                    (\selectedIndex ->
+                        case Array.get selectedIndex itemsArray of
+                            Just newItem ->
+                                if newItem /= currentItem then
+                                    Decode.succeed newItem
+                                else
+                                    Decode.fail "selected item did not change"
 
-                        Nothing ->
-                            Err "selected index out of range"
-                )
+                            Nothing ->
+                                Decode.fail "selected index out of range"
+                    )
     in
         (\currentItem ->
             let
@@ -132,13 +137,13 @@ comboBox attributes toStr allItems =
                     newSelectionDecoder currentItem
 
                 onChange =
-                    Html.on "change" decoder
+                    Events.on "change" decoder
 
                 onKeyUp =
-                    Html.on "keyup" decoder
+                    Events.on "keyup" decoder
 
                 toOption item =
-                    Html.option [ Html.selected (item == currentItem) ]
+                    Html.option [ Attributes.selected (item == currentItem) ]
                         [ Html.text (toStr item) ]
             in
                 Html.select (onChange :: onKeyUp :: attributes)
@@ -162,15 +167,15 @@ slider attributes { min, max, step } value =
     let
         valueDecoder =
             Decode.map (String.toFloat >> Result.withDefault value)
-                Html.targetValue
+                Events.targetValue
     in
         Html.input
-            (Html.type' "range"
-                :: Html.property "min" (Encode.float min)
-                :: Html.property "max" (Encode.float max)
-                :: Html.property "step" (Encode.float step)
-                :: Html.property "value" (Encode.float value)
-                :: Html.on "input" valueDecoder
+            (Attributes.type_ "range"
+                :: Attributes.property "min" (Encode.float min)
+                :: Attributes.property "max" (Encode.float max)
+                :: Attributes.property "step" (Encode.float step)
+                :: Attributes.property "value" (Encode.float value)
+                :: Events.on "input" valueDecoder
                 :: attributes
             )
             []

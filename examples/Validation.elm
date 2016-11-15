@@ -1,8 +1,7 @@
 module Validation exposing (..)
 
 import Html exposing (Html)
-import Html.Attributes as Html
-import Html.App as Html
+import Html.Attributes as Attributes
 import Kintail.InputWidget as InputWidget
 
 
@@ -44,11 +43,13 @@ widget person =
         -- that can then be produced as a message (and vice versa in
         -- `lastNameWidget` below)
         firstNameWidget =
-            InputWidget.lineEdit [ Html.placeholder "First name" ] firstName
+            InputWidget.lineEdit [ Attributes.placeholder "First name" ]
+                firstName
                 |> Html.map (\newFirstName -> Person newFirstName lastName)
 
         lastNameWidget =
-            InputWidget.lineEdit [ Html.placeholder "Last name" ] lastName
+            InputWidget.lineEdit [ Attributes.placeholder "Last name" ]
+                lastName
                 |> Html.map (\newLastName -> Person firstName newLastName)
     in
         Html.div []
@@ -58,7 +59,7 @@ widget person =
             ]
 
 
-main : Program Never
+main : Program Never Person Person
 main =
     Html.beginnerProgram
         { model = Person "" ""

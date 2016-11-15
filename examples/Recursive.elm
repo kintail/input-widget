@@ -2,7 +2,6 @@ module Recursive exposing (..)
 
 import String
 import Html exposing (Html)
-import Html.App as Html
 import Kintail.InputWidget as InputWidget
 
 
@@ -179,7 +178,7 @@ view expression =
         ]
 
 
-main : Program Never
+main : Program Never Expression Expression
 main =
     Html.beginnerProgram
         { model = Or (Constant False) (Constant True)

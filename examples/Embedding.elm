@@ -1,7 +1,6 @@
 module Embedding exposing (..)
 
 import Html exposing (Html)
-import Html.App as Html
 import Kintail.InputWidget as InputWidget
 
 
@@ -39,7 +38,7 @@ view model =
         Html.div [] [ checkbox, label ]
 
 
-main : Program Never
+main : Program Never Model Msg
 main =
     Html.beginnerProgram
         { model = { value = False, timesChanged = 0 }

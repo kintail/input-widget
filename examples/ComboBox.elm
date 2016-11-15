@@ -2,7 +2,6 @@ module ComboBox exposing (..)
 
 import Kintail.InputWidget as InputWidget
 import Html exposing (Html)
-import Html.App as Html
 
 
 type Color
@@ -20,7 +19,7 @@ view currentColor =
         Html.div [] [ comboBox, Html.text (toString currentColor) ]
 
 
-main : Program Never
+main : Program Never Color Color
 main =
     Html.beginnerProgram
         { model = Green

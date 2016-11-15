@@ -1,7 +1,6 @@
 module Readme exposing (..)
 
 import Html exposing (Html)
-import Html.App as Html
 import Kintail.InputWidget as InputWidget
 
 
@@ -60,7 +59,7 @@ view model =
         ]
 
 
-main : Program Never
+main : Program Never Model Msg
 main =
     Html.beginnerProgram
         { model = Model Dr "Albert" "Einstein"

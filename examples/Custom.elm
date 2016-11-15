@@ -1,8 +1,7 @@
 module Custom exposing (..)
 
 import Html exposing (Html)
-import Html.App as Html
-import Html.Events as Html
+import Html.Events as Events
 import Kintail.InputWidget as InputWidget
 
 
@@ -26,9 +25,9 @@ counter =
         view : Int -> Html CounterMsg
         view count =
             Html.span []
-                [ Html.button [ Html.onClick Decrement ] [ Html.text "-" ]
+                [ Html.button [ Events.onClick Decrement ] [ Html.text "-" ]
                 , Html.text (toString count)
-                , Html.button [ Html.onClick Increment ] [ Html.text "+" ]
+                , Html.button [ Events.onClick Increment ] [ Html.text "+" ]
                 ]
 
         -- Standard Elm Architecture update function
@@ -83,7 +82,7 @@ update msg model =
             { model | secondValue = value }
 
 
-main : Program Never
+main : Program Never Model Msg
 main =
     Html.beginnerProgram
         { model = { firstValue = 10, secondValue = 0 }

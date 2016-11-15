@@ -2,7 +2,6 @@ module Slider exposing (..)
 
 import Kintail.InputWidget as InputWidget
 import Html exposing (Html)
-import Html.App as Html
 
 
 view : Float -> Html Float
@@ -13,7 +12,7 @@ view value =
         ]
 
 
-main : Program Never
+main : Program Never Float Float
 main =
     Html.beginnerProgram
         { model = 1.5
