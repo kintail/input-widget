@@ -22,7 +22,7 @@ This package is primarily two things:
     supply the current value to display in an input widget, it's much harder to
     get a mismatch between your model and your view) but it turns out that
     following this pattern also makes it easy to create cool things like
-    [input widgets for recursive data types](https://github.com/kintail/input-widget/blob/1.0.5/examples/Recursive.elm).
+    [input widgets for recursive data types](https://github.com/kintail/input-widget/blob/1.0.6/examples/Recursive.elm).
 
 # How do I use it?
 
@@ -40,7 +40,7 @@ or add
 
 to your `elm-package.json`.
 
-Check out the [module documentation](http://package.elm-lang.org/packages/kintail/input-widget/1.0.5/Kintail-InputWidget)
+Check out the [module documentation](http://package.elm-lang.org/packages/kintail/input-widget/1.0.6/Kintail-InputWidget)
 for usage details.
 
 # Examples
@@ -144,7 +144,7 @@ main =
         }
 ```
 
-Check out the [examples](https://github.com/kintail/input-widget/tree/1.0.5/examples)
+Check out the [examples](https://github.com/kintail/input-widget/tree/1.0.6/examples)
 directory to see the above example in full as well as more examples of how to
 use each input widget, how to define your own, and how to use them within a
 standard Elm app. If you clone this repository, you should be able to run all of
