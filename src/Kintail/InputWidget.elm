@@ -163,22 +163,38 @@ slider :
     -> { min : Float, max : Float, step : Float }
     -> Float
     -> Html Float
-slider attributes { min, max, step } value =
+slider attributes { min, max, step } =
     let
-        valueDecoder =
-            Decode.map (String.toFloat >> Result.withDefault value)
+        targetValueDecoder currentValue =
+            Decode.map (String.toFloat >> Result.withDefault currentValue)
                 Events.targetValue
-    in
-        Html.input
-            (Attributes.type_ "range"
-                :: Attributes.property "min" (Encode.float min)
+
+        newValueDecoder currentValue =
+            targetValueDecoder currentValue
+                |> Decode.andThen
+                    (\newValue ->
+                        if newValue /= currentValue then
+                            Decode.succeed newValue
+                        else
+                            Decode.fail "value did not change"
+                    )
+
+        commonAttributes =
+            Attributes.property "min" (Encode.float min)
                 :: Attributes.property "max" (Encode.float max)
                 :: Attributes.property "step" (Encode.float step)
-                :: Attributes.property "value" (Encode.float value)
-                :: Events.on "input" valueDecoder
                 :: attributes
-            )
-            []
+    in
+        (\currentValue ->
+            Html.input
+                (Attributes.type_ "range"
+                    :: Attributes.property "value" (Encode.float currentValue)
+                    :: Events.on "input" (newValueDecoder currentValue)
+                    :: Events.on "change" (newValueDecoder currentValue)
+                    :: commonAttributes
+                )
+                []
+        )
 
 
 {-| Create a custom input widget from `view` and `update` functions of the same
